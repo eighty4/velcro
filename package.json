@@ -1,0 +1,45 @@
+{
+  "name": "@eighty4/velcro",
+  "description": "Elasticsearch utility that initializes indices, mappings and documents",
+  "keywords": [
+    "elasticsearch",
+    "development",
+    "migration",
+    "data",
+    "devtool",
+    "automation",
+    "index",
+    "mapping",
+    "document"
+  ],
+  "version": "0.0.1",
+  "main": "velcro.js",
+  "license": "BSD-2-Clause",
+  "bin": "lib/velcro.js",
+  "scripts": {
+    "clean": "rimraf lib/*.js",
+    "prebuild": "yarn clean",
+    "build": "tsc"
+  },
+  "dependencies": {
+    "@elastic/elasticsearch": "^8.2.1",
+    "velcro": "^0.1.7",
+    "yaml": "^2.1.1",
+    "yargs": "^17.5.1"
+  },
+  "devDependencies": {
+    "@types/node": "^18.7.13",
+    "@types/yargs": "^17.0.11",
+    "rimraf": "^3.0.2",
+    "ts-node": "^10.9.1",
+    "typescript": "^4.8.2"
+  },
+  "files": [
+    "bin",
+    "lib/*.js",
+    "LICENSE",
+    "package.json",
+    "README.md"
+  ],
+  "packageManager": "yarn@3.2.3"
+}
