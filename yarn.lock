@@ -14,6 +14,24 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@eighty4/velcro@workspace:.":
+  version: 0.0.0-use.local
+  resolution: "@eighty4/velcro@workspace:."
+  dependencies:
+    "@elastic/elasticsearch": ^8.2.1
+    "@types/node": ^18.7.13
+    "@types/yargs": ^17.0.11
+    rimraf: ^3.0.2
+    ts-node: ^10.9.1
+    typescript: ^4.8.2
+    velcro: ^0.1.7
+    yaml: ^2.1.1
+    yargs: ^17.5.1
+  bin:
+    velcro: bin/velcro
+  languageName: unknown
+  linkType: soft
+
 "@elastic/elasticsearch@npm:^8.2.1":
   version: 8.2.1
   resolution: "@elastic/elasticsearch@npm:8.2.1"
@@ -125,9 +143,9 @@ __metadata:
   linkType: hard
 
 "@types/node@npm:^18.7.13":
-  version: 18.7.13
-  resolution: "@types/node@npm:18.7.13"
-  checksum: 45431e7e89ecaf85c7d2c180d801c132a7c59e2f8ad578726b6d71cc74e3267c18f9ccdcad738bc0479790c078f0c79efb0e58da2c6be535c15995dbb19050c9
+  version: 18.7.14
+  resolution: "@types/node@npm:18.7.14"
+  checksum: 99cf28ff854100158de875cca23c7acc3cc01dfee526a52b90b7f36767c821bcbaf2be0a98a70f06f3b78f3c60639168ff949d725b61e2e124f9f71f1fb8043d
   languageName: node
   linkType: hard
 
@@ -139,11 +157,11 @@ __metadata:
   linkType: hard
 
 "@types/yargs@npm:^17.0.11":
-  version: 17.0.11
-  resolution: "@types/yargs@npm:17.0.11"
+  version: 17.0.12
+  resolution: "@types/yargs@npm:17.0.12"
   dependencies:
     "@types/yargs-parser": "*"
-  checksum: 30a45f9e59a5cc3c967f76036bea6a456b1416175aa4c002b70e1f295772e2247ed8117f392b20eef4557ad761678df8c1fcb141852f2c7c44977130d802c855
+  checksum: 5b41d21d8624199f89db82209b2adab2e47867b3677e852fde65698be2ca48364b14c2e70cb0adc9bca4a2102c93dad2409cae0ad666ea36ae031ae1cb08a7b5
   languageName: node
   linkType: hard
 
@@ -1746,24 +1764,6 @@ __metadata:
   checksum: 24b9b66d91ae77037f48bc7c5080d93bf455305a3bd6ee0229e33b4dcba63a44a0018468bb2ce3e2aa6d9bcd8af56a9dff2dfc38bb0e6055eb2886b3c36753fd
   languageName: node
   linkType: hard
-
-"velcro@workspace:.":
-  version: 0.0.0-use.local
-  resolution: "velcro@workspace:."
-  dependencies:
-    "@elastic/elasticsearch": ^8.2.1
-    "@types/node": ^18.7.13
-    "@types/yargs": ^17.0.11
-    rimraf: ^3.0.2
-    ts-node: ^10.9.1
-    typescript: ^4.8.2
-    velcro: ^0.1.7
-    yaml: ^2.1.1
-    yargs: ^17.5.1
-  bin:
-    velcro: lib/velcro.js
-  languageName: unknown
-  linkType: soft
 
 "verror@npm:1.10.0":
   version: 1.10.0

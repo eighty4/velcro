@@ -12,12 +12,12 @@
     "mapping",
     "document"
   ],
-  "version": "0.0.1",
-  "main": "velcro.js",
+  "version": "0.0.2",
   "license": "BSD-2-Clause",
-  "bin": "lib/velcro.js",
+  "main": "lib/velcro.exports.js",
+  "bin": "bin/velcro",
   "scripts": {
-    "clean": "rimraf lib/*.js",
+    "clean": "rimraf lib/**/*.d.ts; rimraf lib/**/*.js",
     "prebuild": "yarn clean",
     "build": "tsc"
   },
@@ -36,6 +36,7 @@
   },
   "files": [
     "bin",
+    "lib/*.d.ts",
     "lib/*.js",
     "LICENSE",
     "package.json",

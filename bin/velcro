@@ -1,2 +1,2 @@
 #!/usr/bin/env node
-require('../lib/velcro')
+require('../lib/velcro.bin')

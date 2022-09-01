@@ -8,6 +8,7 @@
 !.yarn/sdks
 !.yarn/versions
 
-lib/*.js
+lib/**/*.d.ts
+lib/**/*.js
 
 node_modules

@@ -1,19 +1,21 @@
-import {Client} from '@elastic/elasticsearch'
-import {parse as parseYaml} from 'yaml'
-import {join as joinPath} from 'path'
+import type {Client} from '@elastic/elasticsearch'
 import {readFile} from 'fs/promises'
+import {join as joinPath} from 'path'
+import {parse as parseYaml} from 'yaml'
 
-type IndexName = string
+import {createElasticsearchClient} from './createElasticsearchClient'
+
+export type IndexName = string
 
 interface Config {
     indices: Record<IndexName, Index>
 }
 
-type MappingName = string
+export type MappingName = string
 
-type MappingType = 'keyword' | 'text' | 'date' | 'boolean'
+export type MappingType = 'keyword' | 'text' | 'date' | 'boolean'
 
-interface Index {
+export interface Index {
     name: IndexName
     properties: Record<MappingName, MappingType>
 }
@@ -24,10 +26,15 @@ function expandIndexProperties(properties: Record<MappingName, MappingType>): Re
     return expanded
 }
 
-async function readConfigFileContent(): Promise<string> {
-    const yamlPath = joinPath(process.cwd(), 'velcro.yaml')
+async function readConfigFileContent(configPath?: string): Promise<string> {
+    if (!configPath) {
+        configPath = process.cwd()
+    }
+    if (!configPath.endsWith('velcro.yaml')) {
+        configPath = joinPath(configPath, 'velcro.yaml')
+    }
     try {
-        const yamlBuffer = await readFile(yamlPath)
+        const yamlBuffer = await readFile(configPath)
         return yamlBuffer.toString('utf-8')
     } catch (e) {
         if (e.code && e.code === 'ENOENT') {
@@ -39,8 +46,8 @@ async function readConfigFileContent(): Promise<string> {
     }
 }
 
-async function parseConfig(): Promise<Config> {
-    const yamlString = await readConfigFileContent()
+export async function parseConfig(configPath?: string): Promise<Config> {
+    const yamlString = await readConfigFileContent(configPath)
     let yamlObject
     try {
         yamlObject = parseYaml(yamlString)
@@ -68,18 +75,18 @@ async function parseConfig(): Promise<Config> {
 
 export async function strap() {
     const config = await parseConfig()
-    const es = new Client({node: 'http://localhost:9200'})
+    const es = createElasticsearchClient()
 
     for (const indexName in config.indices) {
         const index = config.indices[indexName]
+        console.log('init', index.name)
         await initIndex(es, index)
     }
 
     console.log('finished')
 }
 
-async function initIndex(client: Client, index: Index): Promise<void> {
-    console.log('init', index.name)
+export async function initIndex(client: Client, index: Index): Promise<void> {
     await deleteIndex(client, index.name, true)
     await createIndex(client, index)
 }
