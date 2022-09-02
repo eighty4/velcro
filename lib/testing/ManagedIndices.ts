@@ -6,7 +6,7 @@ export type DocumentFields = any
 
 export interface ManagedIndex {
     name: IndexName
-    testName: IndexName
+    managedTestName: IndexName
     documents: Array<DocumentId>
 }
 

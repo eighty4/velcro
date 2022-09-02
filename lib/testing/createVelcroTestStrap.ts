@@ -3,17 +3,17 @@ import type {DocumentFields, DocumentId, ManagedIndices} from './ManagedIndices'
 import {defaultManagedTestIndexNameFn, type ManagedTestIndexNameFn} from './managedTestIndexName'
 import validateIndexConfig from './validateIndexConfig'
 import VelcroTestStrap from './VelcroTestStrap'
-import verifyDocumentsIndexed from './verifyDocumentsIndexed'
 import {createElasticsearchClient, type ElasticsearchOptions} from '../createElasticsearchClient'
 import {type Index, type IndexName, initIndex, parseConfig} from '../strap'
 import {isEmptyString, isString} from '../validateFns'
 
 export interface VelcroTestStrapOptions {
-    managedTestIndexNameFn?: ManagedTestIndexNameFn
     configPath?: string
     documents?: Record<string, Array<DocumentFields> | Record<DocumentId, DocumentFields>>
     elasticsearch?: ElasticsearchOptions
     indices: Array<string | Index>
+    managedTestIndexNameFn?: ManagedTestIndexNameFn
+    refreshIndices?: boolean
 }
 
 export async function createVelcroTestStrap(options: VelcroTestStrapOptions): Promise<VelcroTestStrap> {
@@ -71,24 +71,24 @@ export async function createVelcroTestStrap(options: VelcroTestStrapOptions): Pr
     const managedTestIndexNameFn = options.managedTestIndexNameFn ?? defaultManagedTestIndexNameFn
 
     for (const index of indices) {
-        const testName = managedTestIndexNameFn(index.name)
-        if (isEmptyString(testName)) {
+        const managedTestName = managedTestIndexNameFn(index.name)
+        if (isEmptyString(managedTestName)) {
             throw new Error(`index ${index.name} alt name fn result is empty`)
         }
         await initIndex(client, {
             ...index,
-            name: testName,
+            name: managedTestName,
         })
         managed[index.name] = {
             name: index.name,
-            testName: testName,
+            managedTestName: managedTestName,
             documents: [],
         }
     }
 
     if (options.documents) {
         for (const indexName in options.documents) {
-            const altIndexName = managed[indexName].testName
+            const altIndexName = managed[indexName].managedTestName
             const indexing: Array<Promise<DocumentId>> = []
             if (Array.isArray(options.documents[indexName])) {
                 for (const document of options.documents[indexName] as Array<any>) {
@@ -103,7 +103,11 @@ export async function createVelcroTestStrap(options: VelcroTestStrapOptions): Pr
             const documentIds = await Promise.all(indexing)
             documentIds.forEach(id => managed[indexName].documents.push(id))
         }
-        await verifyDocumentsIndexed(client, managed)
+        if (typeof options.refreshIndices === 'undefined' || options.refreshIndices === true) {
+            await options.elasticsearch.client.indices.refresh({
+                index: Object.keys(options.documents).map(indexName => managed[indexName].managedTestName)
+            })
+        }
     }
     return new VelcroTestStrap(client, managed)
 }

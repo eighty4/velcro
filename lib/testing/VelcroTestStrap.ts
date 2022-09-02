@@ -18,14 +18,14 @@ export default class VelcroTestStrap {
 
     async deleteIndices(): Promise<void> {
         for (const indexName in this._managed) {
-            const index = this._managed[indexName].testName
+            const index = this._managed[indexName].managedTestName
             await this._client.indices.delete({index})
         }
     }
 
     async deleteDocuments(): Promise<void> {
         for (const indexName in this._managed) {
-            const index = this._managed[indexName].testName
+            const index = this._managed[indexName].managedTestName
             for (const id in this._managed[indexName]) {
                 await this._client.delete({index, id})
             }
@@ -36,13 +36,13 @@ export default class VelcroTestStrap {
         if (!this._managed[index]) {
             throw new Error(`${index} is not a managed index`)
         }
-        return this._managed[index].testName
+        return this._managed[index].managedTestName
     }
 
     get managedIndexNames(): Record<IndexName, IndexName> {
         const names = {}
         for (const indexName in this._managed) {
-            names[indexName] = this._managed[indexName].testName
+            names[indexName] = this._managed[indexName].managedTestName
         }
         return names
     }
@@ -58,7 +58,7 @@ export default class VelcroTestStrap {
     documentIds(indexName: IndexName): Array<DocumentId> {
         const index = Object.keys(this._managed)
             .map(maybeIndexName => this._managed[maybeIndexName])
-            .find(index => index.name === indexName || index.testName === indexName)
+            .find(index => index.name === indexName || index.managedTestName === indexName)
         if (!index) {
             throw new Error(`no index state for ${indexName}`)
         }
