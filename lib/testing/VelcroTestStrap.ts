@@ -1,7 +1,7 @@
 import type {Client} from '@elastic/elasticsearch'
 
-import type {DocumentId, ManagedIndices} from './ManagedIndices'
-import type {IndexName} from '../strap'
+import type {ManagedIndices} from './ManagedIndices'
+import type {IndexName, DocumentId} from '../velcro.model'
 
 export default class VelcroTestStrap {
     constructor(private readonly _client: Client,

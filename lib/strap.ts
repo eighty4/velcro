@@ -1,87 +1,38 @@
 import type {Client} from '@elastic/elasticsearch'
-import {readFile} from 'fs/promises'
-import {join as joinPath} from 'path'
-import {parse as parseYaml} from 'yaml'
 
 import {createElasticsearchClient} from './createElasticsearchClient'
+import {indexDocuments} from './indexDocuments'
+import {isEmptyString} from './validateFns'
+import {expandIndexProperties, parseConfig} from './velcro.config'
+import type {Environment, Index, IndexName} from './velcro.model'
 
-export type IndexName = string
-
-interface Config {
-    indices: Record<IndexName, Index>
+export interface StrapOptions {
+    environment?: Environment
 }
 
-export type MappingName = string
-
-export type MappingType = 'keyword' | 'text' | 'date' | 'boolean'
-
-export interface Index {
-    name: IndexName
-    properties: Record<MappingName, MappingType>
-}
-
-function expandIndexProperties(properties: Record<MappingName, MappingType>): Record<MappingName, { 'type': MappingType }> {
-    const expanded = {}
-    Object.keys(properties).forEach(propName => expanded[propName] = {type: properties[propName]})
-    return expanded
-}
-
-async function readConfigFileContent(configPath?: string): Promise<string> {
-    if (!configPath) {
-        configPath = process.cwd()
-    }
-    if (!configPath.endsWith('velcro.yaml')) {
-        configPath = joinPath(configPath, 'velcro.yaml')
-    }
-    try {
-        const yamlBuffer = await readFile(configPath)
-        return yamlBuffer.toString('utf-8')
-    } catch (e) {
-        if (e.code && e.code === 'ENOENT') {
-            console.log('no velcro.yaml found in cwd')
-        } else {
-            console.log(`error reading velcro.yaml: ${e.message}`)
-        }
-        process.exit(1)
-    }
-}
-
-export async function parseConfig(configPath?: string): Promise<Config> {
-    const yamlString = await readConfigFileContent(configPath)
-    let yamlObject
-    try {
-        yamlObject = parseYaml(yamlString)
-    } catch (e) {
-        console.log(`error parsing yaml from velcro.yaml: ${e.message}`)
-        process.exit(1)
-    }
-    const config: Config = {
-        indices: {},
-    }
-    if (yamlObject.indices) {
-        Object.keys(yamlObject.indices).forEach((indexName) => {
-            const index = yamlObject.indices[indexName]
-            if (index.properties) {
-                const properties = {}
-                Object.keys(index.properties).forEach(propertyName => {
-                    properties[propertyName] = index.properties[propertyName]
-                })
-                config.indices[indexName] = {name: indexName, properties}
-            }
-        })
-    }
-    return config
-}
-
-export async function strap() {
+export async function strap(options: StrapOptions) {
     const config = await parseConfig()
     const es = createElasticsearchClient()
+
+    if (!isEmptyString(options.environment) && !config.documents[options.environment]) {
+        console.log(`velcro strap ran for env ${options.environment} but there is no ${options.environment} config`)
+        process.exit(1)
+    }
 
     for (const indexName in config.indices) {
         const index = config.indices[indexName]
         console.log('init', index.name)
         await initIndex(es, index)
     }
+
+    let created = 0
+    if (config.documents['all']) {
+        created += await indexDocuments(es, config.documents['all'])
+    }
+    if (options.environment) {
+        created += await indexDocuments(es, config.documents[options.environment])
+    }
+    console.log(`created ${created} document${created === 1 ? '' : 's'}`)
 
     console.log('finished')
 }

@@ -1,8 +1,4 @@
-import type {IndexName} from '../strap'
-
-export type DocumentId = string
-
-export type DocumentFields = any
+import type {DocumentId, IndexName} from '../velcro.model'
 
 export interface ManagedIndex {
     name: IndexName

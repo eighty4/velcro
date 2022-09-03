@@ -1,5 +1,5 @@
-import type {Index} from '../strap'
 import {isEmptyString, isValidMappingType} from '../validateFns'
+import type {Index} from '../velcro.model'
 
 export default function validateIndexConfig(index: Index): void {
     if (!index) {

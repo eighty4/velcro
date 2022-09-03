@@ -1,17 +1,19 @@
-import indexDocument from './indexDocument'
-import type {DocumentFields, DocumentId, ManagedIndices} from './ManagedIndices'
+import type {ManagedIndices} from './ManagedIndices'
 import {defaultManagedTestIndexNameFn, type ManagedTestIndexNameFn} from './managedTestIndexName'
 import validateIndexConfig from './validateIndexConfig'
 import VelcroTestStrap from './VelcroTestStrap'
 import {createElasticsearchClient, type ElasticsearchOptions} from '../createElasticsearchClient'
-import {type Index, type IndexName, initIndex, parseConfig} from '../strap'
+import {indexDocuments} from '../indexDocuments'
+import {initIndex} from '../strap'
 import {isEmptyString, isString} from '../validateFns'
+import {parseConfig} from '../velcro.config'
+import type {DocumentFields, DocumentId, Documents, Index, IndexName} from '../velcro.model'
 
 export interface VelcroTestStrapOptions {
     configPath?: string
-    documents?: Record<string, Array<DocumentFields> | Record<DocumentId, DocumentFields>>
+    documents?: Record<IndexName, Array<DocumentFields> | Record<DocumentId, DocumentFields>>
     elasticsearch?: ElasticsearchOptions
-    indices: Array<string | Index>
+    indices: Array<IndexName | Index>
     managedTestIndexNameFn?: ManagedTestIndexNameFn
     refreshIndices?: boolean
 }
@@ -87,22 +89,23 @@ export async function createVelcroTestStrap(options: VelcroTestStrapOptions): Pr
     }
 
     if (options.documents) {
+        const documents: Documents = {}
         for (const indexName in options.documents) {
             const altIndexName = managed[indexName].managedTestName
-            const indexing: Array<Promise<DocumentId>> = []
+            documents[altIndexName] = []
             if (Array.isArray(options.documents[indexName])) {
-                for (const document of options.documents[indexName] as Array<any>) {
-                    indexing.push(indexDocument(client, altIndexName, document))
+                for (const doc of options.documents[indexName] as Array<any>) {
+                    documents[altIndexName].push({doc})
                 }
             } else {
-                for (const id in options.documents[indexName]) {
-                    const document = options.documents[indexName][id]
-                    indexing.push(indexDocument(client, altIndexName, document, id))
+                for (const _id in options.documents[indexName]) {
+                    const doc = options.documents[indexName][_id]
+                    documents[altIndexName].push({_id, doc})
                 }
             }
-            const documentIds = await Promise.all(indexing)
-            documentIds.forEach(id => managed[indexName].documents.push(id))
         }
+        await indexDocuments(client, documents)
+
         if (typeof options.refreshIndices === 'undefined' || options.refreshIndices === true) {
             await options.elasticsearch.client.indices.refresh({
                 index: Object.keys(options.documents).map(indexName => managed[indexName].managedTestName)
