@@ -27,10 +27,10 @@ export async function strap(options: StrapOptions) {
 
     let created = 0
     if (config.documents['all']) {
-        created += await indexDocuments(es, config.documents['all'])
+        created += (await indexDocuments(es, config.documents['all'])).count
     }
     if (options.environment) {
-        created += await indexDocuments(es, config.documents[options.environment])
+        created += (await indexDocuments(es, config.documents[options.environment])).count
     }
     console.log(`created ${created} document${created === 1 ? '' : 's'}`)
 

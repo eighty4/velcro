@@ -12,7 +12,7 @@
     "mapping",
     "document"
   ],
-  "version": "0.0.4",
+  "version": "0.0.5",
   "license": "BSD-2-Clause",
   "main": "lib/velcro.exports.js",
   "bin": "bin/velcro",

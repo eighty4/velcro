@@ -83,7 +83,7 @@ export async function createVelcroTestStrap(options: VelcroTestStrapOptions): Pr
         })
         managed[index.name] = {
             name: index.name,
-            managedTestName: managedTestName,
+            managedTestName,
             documents: [],
         }
     }
@@ -91,20 +91,25 @@ export async function createVelcroTestStrap(options: VelcroTestStrapOptions): Pr
     if (options.documents) {
         const documents: Documents = {}
         for (const indexName in options.documents) {
-            const altIndexName = managed[indexName].managedTestName
-            documents[altIndexName] = []
+            const {managedTestName} = managed[indexName]
+            documents[managedTestName] = []
             if (Array.isArray(options.documents[indexName])) {
                 for (const doc of options.documents[indexName] as Array<any>) {
-                    documents[altIndexName].push({doc})
+                    documents[managedTestName].push({doc})
                 }
             } else {
                 for (const _id in options.documents[indexName]) {
                     const doc = options.documents[indexName][_id]
-                    documents[altIndexName].push({_id, doc})
+                    documents[managedTestName].push({_id, doc})
                 }
             }
         }
-        await indexDocuments(client, documents)
+        const indexingResult = await indexDocuments(client, documents)
+        for (const managedTestName in indexingResult.documentIds) {
+            const indexName = Object.keys(managed)
+                .find(indexName => managed[indexName].managedTestName === managedTestName)
+            managed[indexName].documents = indexingResult.documentIds[managedTestName]
+        }
 
         if (typeof options.refreshIndices === 'undefined' || options.refreshIndices === true) {
             await options.elasticsearch.client.indices.refresh({
