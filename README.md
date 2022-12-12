@@ -4,11 +4,13 @@ Create Elasticsearch indices, mappings and documents -- without any code!
 
 No frills, no config!
 
-It's so 0.0.5, it can't even be configured for an Elasticsearch node other than localhost or a node that needs authentication!
+It's so 0.0.6, it can't even be configured for an Elasticsearch node other than localhost or a node that needs authentication!
 
 ## CLI
 
-### Setup
+The CLI currently has one subcommand: `velcro strap`.
+
+### Setup methods
 
 Install globally
 
@@ -23,7 +25,7 @@ Or npx it
 npx velcro strap
 ```
 
-Or put it in your npm script, so you can `npm run velcro` it
+Or add an npm script and `npm run velcro` it
 
 ```json
 {
@@ -31,7 +33,7 @@ Or put it in your npm script, so you can `npm run velcro` it
     "velcro": "velcro strap"
   },
   "devDependencies": {
-    "velcro": "0.0.5"
+    "velcro": "0.0.6"
   }
 }
 ```

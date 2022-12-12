@@ -1,10 +1,11 @@
+import type {Client} from '@elastic/elasticsearch'
+
 import type {ManagedIndices} from './ManagedIndices'
 import {defaultManagedTestIndexNameFn, type ManagedTestIndexNameFn} from './managedTestIndexName'
 import validateIndexConfig from './validateIndexConfig'
 import VelcroTestStrap from './VelcroTestStrap'
-import {createElasticsearchClient, type ElasticsearchOptions} from '../createElasticsearchClient'
 import {indexDocuments} from '../indexDocuments'
-import {initIndex} from '../strap'
+import {initIndex} from '../indices'
 import {isEmptyString, isString} from '../validateFns'
 import {parseConfig} from '../velcro.config'
 import type {DocumentFields, DocumentId, Documents, Index, IndexName} from '../velcro.model'
@@ -12,10 +13,26 @@ import type {DocumentFields, DocumentId, Documents, Index, IndexName} from '../v
 export interface VelcroTestStrapOptions {
     configPath?: string
     documents?: Record<IndexName, Array<DocumentFields> | Record<DocumentId, DocumentFields>>
-    elasticsearch?: ElasticsearchOptions
+    elasticsearch: ElasticsearchTestStrapOptions
     indices: Array<IndexName | Index>
     managedTestIndexNameFn?: ManagedTestIndexNameFn
     refreshIndices?: boolean
+}
+
+export interface ElasticsearchTestStrapOptions {
+    client?: ElasticsearchClient
+    create?: () => ElasticsearchClient
+}
+
+export type ElasticsearchClient = {
+    close: () => Promise<void>
+    delete: any,
+    index: any,
+    indices: {
+        create: any,
+        delete: any,
+        refresh: any,
+    },
 }
 
 export async function createVelcroTestStrap(options: VelcroTestStrapOptions): Promise<VelcroTestStrap> {
@@ -68,7 +85,7 @@ export async function createVelcroTestStrap(options: VelcroTestStrapOptions): Pr
         }
     }
 
-    const client = createElasticsearchClient(options.elasticsearch)
+    const client = elasticsearchClientFromOpts(options.elasticsearch)
     const managed: ManagedIndices = {}
     const managedTestIndexNameFn = options.managedTestIndexNameFn ?? defaultManagedTestIndexNameFn
 
@@ -118,4 +135,18 @@ export async function createVelcroTestStrap(options: VelcroTestStrapOptions): Pr
         }
     }
     return new VelcroTestStrap(client, managed)
+}
+
+export function elasticsearchClientFromOpts(opts: ElasticsearchTestStrapOptions): Client {
+    if (!opts || !(opts.client || opts.create)) {
+        throw new Error('ElasticsearchOptions did not provide an Elasticsearch client or create factory fn')
+    }
+    let client = opts.client
+    if (!client && opts.create) {
+        client = opts.create()
+        if (!client) {
+            throw new Error('ElasticsearchOptions.create did not provide an Elasticsearch client')
+        }
+    }
+    return client as unknown as Client
 }

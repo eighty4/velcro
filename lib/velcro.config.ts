@@ -2,19 +2,11 @@ import {join as joinPath} from 'path'
 import {readFile} from 'fs/promises'
 import {parse as parseYaml} from 'yaml'
 
-import type {DocumentsConfig, Index, IndexName, MappingName, MappingType} from './velcro.model'
+import type {DocumentsConfig, Index, IndexName} from './velcro.model'
 
 export interface Config {
     indices: Record<IndexName, Index>
     documents: DocumentsConfig
-}
-
-export type ExpandedIndexProperties = Record<MappingName, { 'type': MappingType }>
-
-export function expandIndexProperties(properties: Record<MappingName, MappingType>): ExpandedIndexProperties {
-    const expanded = {}
-    Object.keys(properties).forEach(propName => expanded[propName] = {type: properties[propName]})
-    return expanded
 }
 
 async function readConfigFileContent(configPath?: string): Promise<string> {
