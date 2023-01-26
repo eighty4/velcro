@@ -1,3 +1,5 @@
+[![velcro on npm](https://img.shields.io/npm/v/@eighty4/velcro)](https://www.npmjs.com/package/@eighty4/velcro)
+
 # Velcro for Elasticsearch
 
 Create Elasticsearch indices, mappings and documents -- without any code!
