@@ -1,9 +1,7 @@
 import type {Client} from '@elastic/elasticsearch'
 
-import type {ManagedIndices} from './ManagedIndices'
-import {defaultManagedTestIndexNameFn, type ManagedTestIndexNameFn} from './managedTestIndexName'
 import validateIndexConfig from './validateIndexConfig'
-import VelcroTestStrap from './VelcroTestStrap'
+import {VelcroTestStrap, type ManagedIndices} from './VelcroTestStrap'
 import {indexDocuments} from '../indexDocuments'
 import {initIndex} from '../indices'
 import {isEmptyString, isString} from '../validateFns'
@@ -29,6 +27,8 @@ export type ElasticsearchClient = {
         refresh: any,
     },
 }
+
+export type ManagedTestIndexNameFn = (indexName: string) => string
 
 export async function createVelcroTestStrap(options: VelcroTestStrapOptions): Promise<VelcroTestStrap> {
     if (!options) {
@@ -144,4 +144,13 @@ function elasticsearchClientFromOpts(options: VelcroTestStrapOptions): Client {
         throw new Error('VelcroTestStrapOptions.elasticsearch() did not provide an Elasticsearch client')
     }
     return client as unknown as Client
+}
+
+export function defaultManagedTestIndexNameFn(indexName: string): string {
+    const letters = 'abcdefghijklmnopqrstuvwxyz'
+    let suffix = ''
+    for (let i = 0; i < 4; i++) {
+        suffix += letters.charAt(Math.floor(Math.random() * 26))
+    }
+    return `test-${indexName}-${suffix}`
 }

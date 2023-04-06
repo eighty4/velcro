@@ -1,9 +1,16 @@
 import type {Client} from '@elastic/elasticsearch'
 
-import type {ManagedIndices} from './ManagedIndices'
-import type {IndexName, DocumentId} from '../velcro.model'
+import type {DocumentId, IndexName} from '../velcro.model'
 
-export default class VelcroTestStrap {
+export interface ManagedIndex {
+    name: IndexName
+    managedTestName: IndexName
+    documents: Array<DocumentId>
+}
+
+export type ManagedIndices = Record<IndexName, ManagedIndex>
+
+export class VelcroTestStrap {
     constructor(private readonly _client: Client,
                 private readonly _managed: ManagedIndices) {
     }
