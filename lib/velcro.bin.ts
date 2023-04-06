@@ -10,7 +10,7 @@ yargs(hideBin(process.argv))
             environment: {alias: 'env', describe: 'environment to initialize'},
         }),
         handler: async (args) => {
-            const {strap} = await import('./strap')
+            const {strap} = await import('./velcro.strap')
             await strap({
                 environment: args.environment as string
             })

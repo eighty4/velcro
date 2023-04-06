@@ -1,5 +1,5 @@
-import {join as joinPath} from 'path'
 import {readFile} from 'fs/promises'
+import {join as joinPath} from 'path'
 import {parse as parseYaml} from 'yaml'
 
 import type {DocumentsConfig, Index, IndexName} from './velcro.model'

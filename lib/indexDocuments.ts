@@ -1,4 +1,4 @@
-import {Client} from '@elastic/elasticsearch'
+import type {Client} from '@elastic/elasticsearch'
 
 import type {DocumentId, DocumentIds, Documents, Document, IndexName} from './velcro.model'
 
