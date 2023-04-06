@@ -13,7 +13,7 @@ export async function strap(options: StrapOptions) {
     const config = await getConfigFromCwd()
     const es = createElasticsearchClient()
 
-    if (!isEmptyString(options.environment) && !config.documents[options.environment]) {
+    if (!isEmptyString(options.environment) && !config.documents[options.environment as string]) {
         console.log(`velcro strap ran for env ${options.environment} but there is no ${options.environment} config`)
         process.exit(1)
     }
@@ -41,7 +41,7 @@ async function getConfigFromCwd(): Promise<Config> {
     let error: string | null = null
     try {
         config = await parseConfig()
-    } catch (e) {
+    } catch (e: any) {
         error = e.message
     }
     if (!config && !error) {
@@ -51,6 +51,6 @@ async function getConfigFromCwd(): Promise<Config> {
         console.log(`unable to read velcro config: ${error}`)
         process.exit(1)
     } else {
-        return config
+        return config as Config
     }
 }

@@ -2,7 +2,7 @@ import {readFile} from 'fs/promises'
 import {join as joinPath} from 'path'
 import {parse as parseYaml} from 'yaml'
 
-import type {DocumentsConfig, Index, IndexName} from './velcro.model'
+import type {DocumentsConfig, Index, IndexName, MappingName, MappingType} from './velcro.model'
 
 export interface Config {
     indices: Record<IndexName, Index>
@@ -18,7 +18,7 @@ async function readConfigFileContent(configPath?: string): Promise<string | null
     }
     try {
         return (await readFile(configPath)).toString('utf-8')
-    } catch (e) {
+    } catch (e: any) {
         if (e.code && e.code === 'ENOENT') {
             return null
         } else {
@@ -29,10 +29,10 @@ async function readConfigFileContent(configPath?: string): Promise<string | null
 
 export async function parseConfig(configPath?: string): Promise<Config | null> {
     const yamlString = await readConfigFileContent(configPath)
-    let yamlObject
+    let yamlObject: any
     try {
-        yamlObject = parseYaml(yamlString)
-    } catch (e) {
+        yamlObject = parseYaml(yamlString as string)
+    } catch (e: any) {
         throw new Error(`yaml parse error (${e.message})`)
     }
     const config: Config = {
@@ -43,7 +43,7 @@ export async function parseConfig(configPath?: string): Promise<Config | null> {
         Object.keys(yamlObject.indices).forEach((indexName) => {
             const index = yamlObject.indices[indexName]
             if (index.properties) {
-                const properties = {}
+                const properties: Record<MappingName, MappingType> = {}
                 Object.keys(index.properties).forEach(propertyName => {
                     properties[propertyName] = index.properties[propertyName]
                 })
@@ -57,7 +57,7 @@ export async function parseConfig(configPath?: string): Promise<Config | null> {
             Object.keys(yamlObject.documents[environment]).forEach((indexName) => {
                 config.documents[environment][indexName] = []
                 const docs = yamlObject.documents[environment][indexName]
-                docs.forEach((doc) => {
+                docs.forEach((doc: any) => {
                     if (doc._id && doc.doc) {
                         config.documents[environment][indexName].push({
                             _id: doc._id,

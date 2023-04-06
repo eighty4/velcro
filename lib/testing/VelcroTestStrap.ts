@@ -47,7 +47,7 @@ export class VelcroTestStrap {
     }
 
     get managedIndexNames(): Record<IndexName, IndexName> {
-        const names = {}
+        const names: Record<IndexName, IndexName> = {}
         for (const indexName in this._managed) {
             names[indexName] = this._managed[indexName].managedTestName
         }

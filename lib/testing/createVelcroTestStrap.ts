@@ -44,7 +44,7 @@ export async function createVelcroTestStrap(options: VelcroTestStrapOptions): Pr
             try {
                 validateIndexConfig(index as Index)
                 indices.push(index as Index)
-            } catch (e) {
+            } catch (e: any) {
                 throw new Error(`opts.indices[${i}] is invalid (${e.message})`)
             }
         }
@@ -74,7 +74,7 @@ export async function createVelcroTestStrap(options: VelcroTestStrapOptions): Pr
                 if (!Array.isArray(options.documents[indexName])) {
                     throw new Error(`options.documents['${indexName}'] is not an array`)
                 }
-                options.documents[indexName].forEach((document, i) => {
+                options.documents[indexName].forEach((document: any, i: number) => {
                     if (document && !Object.keys(document).length) {
                         throw new Error(`options.documents['${indexName}'][${i}] is an empty object`)
                     }
@@ -113,8 +113,9 @@ export async function createVelcroTestStrap(options: VelcroTestStrapOptions): Pr
                     documents[managedTestName].push({doc})
                 }
             } else {
-                for (const _id in options.documents[indexName]) {
-                    const doc = options.documents[indexName][_id]
+                const docs = options.documents as Record<IndexName, Record<DocumentId, DocumentFields>>
+                for (const _id in docs[indexName]) {
+                    const doc = docs[indexName][_id]
                     documents[managedTestName].push({_id, doc})
                 }
             }
@@ -122,7 +123,7 @@ export async function createVelcroTestStrap(options: VelcroTestStrapOptions): Pr
         const indexingResult = await indexDocuments(client, documents)
         for (const managedTestName in indexingResult.documentIds) {
             const indexName = Object.keys(managed)
-                .find(indexName => managed[indexName].managedTestName === managedTestName)
+                .find(indexName => managed[indexName].managedTestName === managedTestName) as string
             managed[indexName].documents = indexingResult.documentIds[managedTestName]
         }
 

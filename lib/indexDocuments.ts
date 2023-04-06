@@ -5,7 +5,7 @@ import type {DocumentId, DocumentIds, Documents, Document, IndexName} from './ve
 export async function indexDocument(client: Client, index: string, document: Document): Promise<DocumentId> {
     try {
         return (await client.index({index, id: document._id, document: document.doc}))._id
-    } catch (e) {
+    } catch (e: any) {
         throw new Error(`error indexing document in index ${index} (${e.message})`)
     }
 }
@@ -24,7 +24,7 @@ export async function indexDocuments(client: Client, documents: Documents): Prom
         }
     }
 
-    const documentIds = {}
+    const documentIds: DocumentIds = {}
     let count = 0
     for (const indexName in indexing) {
         count += indexing[indexName].length
