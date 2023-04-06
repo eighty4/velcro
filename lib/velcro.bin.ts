@@ -5,9 +5,9 @@ yargs(hideBin(process.argv))
     .command({
         command: 'strap',
         aliases: ['bootstrap', 'init'],
-        describe: 'initialize index mappings',
+        describe: 'initialize Elasticsearch with index mappings and documents',
         builder: (y) => y.options({
-            environment: {alias: 'env', describe: 'init env target'},
+            environment: {alias: 'env', describe: 'environment to initialize'},
         }),
         handler: async (args) => {
             const h = await import('./strap')
