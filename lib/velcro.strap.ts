@@ -2,7 +2,7 @@ import {createElasticsearchClient} from './createElasticsearchClient'
 import {indexDocuments} from './indexDocuments'
 import {initIndex} from './indices'
 import {isEmptyString} from './validateFns'
-import {parseConfig} from './velcro.config'
+import {Config, parseConfig} from './velcro.config'
 import type {Environment} from './velcro.model'
 
 export interface StrapOptions {
@@ -10,7 +10,7 @@ export interface StrapOptions {
 }
 
 export async function strap(options: StrapOptions) {
-    const config = await parseConfig()
+    const config = await getConfigFromCwd()
     const es = createElasticsearchClient()
 
     if (!isEmptyString(options.environment) && !config.documents[options.environment]) {
@@ -34,4 +34,23 @@ export async function strap(options: StrapOptions) {
     console.log(`created ${created} document${created === 1 ? '' : 's'}`)
 
     console.log('finished')
+}
+
+async function getConfigFromCwd(): Promise<Config> {
+    let config: Config | null = null
+    let error: string | null = null
+    try {
+        config = await parseConfig()
+    } catch (e) {
+        error = e.message
+    }
+    if (!config && !error) {
+        error = 'velcro.yaml not found in cwd'
+    }
+    if (error) {
+        console.log(`unable to read velcro config: ${error}`)
+        process.exit(1)
+    } else {
+        return config
+    }
 }

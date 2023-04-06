@@ -9,7 +9,7 @@ export interface Config {
     documents: DocumentsConfig
 }
 
-async function readConfigFileContent(configPath?: string): Promise<string> {
+async function readConfigFileContent(configPath?: string): Promise<string | null> {
     if (!configPath) {
         configPath = process.cwd()
     }
@@ -17,26 +17,23 @@ async function readConfigFileContent(configPath?: string): Promise<string> {
         configPath = joinPath(configPath, 'velcro.yaml')
     }
     try {
-        const yamlBuffer = await readFile(configPath)
-        return yamlBuffer.toString('utf-8')
+        return (await readFile(configPath)).toString('utf-8')
     } catch (e) {
         if (e.code && e.code === 'ENOENT') {
-            console.log('no velcro.yaml found in cwd')
+            return null
         } else {
-            console.log(`error reading velcro.yaml: ${e.message}`)
+            throw new Error(`velcro.yaml read error: ${e.message}`)
         }
-        process.exit(1)
     }
 }
 
-export async function parseConfig(configPath?: string): Promise<Config> {
+export async function parseConfig(configPath?: string): Promise<Config | null> {
     const yamlString = await readConfigFileContent(configPath)
     let yamlObject
     try {
         yamlObject = parseYaml(yamlString)
     } catch (e) {
-        console.log(`error parsing yaml from velcro.yaml: ${e.message}`)
-        process.exit(1)
+        throw new Error(`yaml parse error (${e.message})`)
     }
     const config: Config = {
         indices: {},

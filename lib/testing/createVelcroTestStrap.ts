@@ -1,7 +1,7 @@
 import type {Client} from '@elastic/elasticsearch'
 
 import validateIndexConfig from './validateIndexConfig'
-import {VelcroTestStrap, type ManagedIndices} from './VelcroTestStrap'
+import {type ManagedIndices, VelcroTestStrap} from './VelcroTestStrap'
 import {indexDocuments} from '../indexDocuments'
 import {initIndex} from '../indices'
 import {isEmptyString, isString} from '../validateFns'
@@ -52,6 +52,9 @@ export async function createVelcroTestStrap(options: VelcroTestStrapOptions): Pr
 
     if (Object.keys(indexNameReferences).length) {
         const config = await parseConfig(options.configPath)
+        if (config === null) {
+            throw new Error(`could not find velcro.yaml, yet test references velcro.yaml indices (${Object.keys(indexNameReferences).join(', ')})`)
+        }
         for (const indexName in indexNameReferences) {
             const index = config.indices[indexName]
             if (!index) {
