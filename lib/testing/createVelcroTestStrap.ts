@@ -13,15 +13,10 @@ import type {DocumentFields, DocumentId, Documents, Index, IndexName} from '../v
 export interface VelcroTestStrapOptions {
     configPath?: string
     documents?: Record<IndexName, Array<DocumentFields> | Record<DocumentId, DocumentFields>>
-    elasticsearch: ElasticsearchTestStrapOptions
+    elasticsearch: ElasticsearchClient | (() => ElasticsearchClient)
     indices: Array<IndexName | Index>
     managedTestIndexNameFn?: ManagedTestIndexNameFn
     refreshIndices?: boolean
-}
-
-export interface ElasticsearchTestStrapOptions {
-    client?: ElasticsearchClient
-    create?: () => ElasticsearchClient
 }
 
 export type ElasticsearchClient = {
@@ -85,7 +80,7 @@ export async function createVelcroTestStrap(options: VelcroTestStrapOptions): Pr
         }
     }
 
-    const client = elasticsearchClientFromOpts(options.elasticsearch)
+    const client = elasticsearchClientFromOpts(options)
     const managed: ManagedIndices = {}
     const managedTestIndexNameFn = options.managedTestIndexNameFn ?? defaultManagedTestIndexNameFn
 
@@ -129,24 +124,24 @@ export async function createVelcroTestStrap(options: VelcroTestStrapOptions): Pr
         }
 
         if (typeof options.refreshIndices === 'undefined' || options.refreshIndices === true) {
-            await options.elasticsearch.client.indices.refresh({
-                index: Object.keys(options.documents).map(indexName => managed[indexName].managedTestName)
+            await client.indices.refresh({
+                index: Object.keys(options.documents).map(indexName => managed[indexName].managedTestName),
             })
         }
     }
     return new VelcroTestStrap(client, managed)
 }
 
-export function elasticsearchClientFromOpts(opts: ElasticsearchTestStrapOptions): Client {
-    if (!opts || !(opts.client || opts.create)) {
-        throw new Error('ElasticsearchOptions did not provide an Elasticsearch client or create factory fn')
+function elasticsearchClientFromOpts(options: VelcroTestStrapOptions): Client {
+    if (!options || !options.elasticsearch) {
+        throw new Error('VelcroTestStrapOptions.elasticsearch did not provide an Elasticsearch client or a factory fn to create one')
     }
-    let client = opts.client
-    if (!client && opts.create) {
-        client = opts.create()
-        if (!client) {
-            throw new Error('ElasticsearchOptions.create did not provide an Elasticsearch client')
-        }
+    if (!(options.elasticsearch instanceof Function)) {
+        return options.elasticsearch as unknown as Client
+    }
+    const client = options.elasticsearch()
+    if (!client) {
+        throw new Error('VelcroTestStrapOptions.elasticsearch() did not provide an Elasticsearch client')
     }
     return client as unknown as Client
 }
