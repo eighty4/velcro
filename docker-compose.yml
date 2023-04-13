@@ -1,0 +1,16 @@
+---
+services:
+  elasticsearch:
+    container_name: velcro-elasticsearch
+    image: elasticsearch:8.7.0
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:9200" ]
+      start_period: 30s
+      interval: 2s
+      timeout: 5s
+      retries: 30
+    ports:
+      - "9200:9200"
+    environment:
+      discovery.type: single-node
+      xpack.security.enabled: "false"

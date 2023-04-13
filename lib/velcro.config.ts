@@ -9,6 +9,15 @@ export interface Config {
     documents: DocumentsConfig
 }
 
+export async function readConfig(configPath?: string): Promise<Config | null> {
+    const configYaml = await readConfigFileContent(configPath)
+    if (configYaml) {
+        return await parseConfig(configYaml)
+    } else {
+        return null
+    }
+}
+
 async function readConfigFileContent(configPath?: string): Promise<string | null> {
     if (!configPath) {
         configPath = process.cwd()
@@ -27,11 +36,10 @@ async function readConfigFileContent(configPath?: string): Promise<string | null
     }
 }
 
-export async function parseConfig(configPath?: string): Promise<Config | null> {
-    const yamlString = await readConfigFileContent(configPath)
+export async function parseConfig(configYaml: string): Promise<Config | null> {
     let yamlObject: any
     try {
-        yamlObject = parseYaml(yamlString as string)
+        yamlObject = parseYaml(configYaml as string)
     } catch (e: any) {
         throw new Error(`yaml parse error (${e.message})`)
     }

@@ -20,6 +20,7 @@
     "clean": "rimraf lib/**/*.d.ts; rimraf lib/**/*.js",
     "prebuild": "yarn clean",
     "build": "tsc",
+    "pretest": "yarn clean",
     "test": "jest"
   },
   "dependencies": {

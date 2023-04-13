@@ -5,7 +5,7 @@ import {type ManagedIndices, VelcroTestStrap} from './VelcroTestStrap'
 import {indexDocuments} from '../indexDocuments'
 import {initIndex} from '../indices'
 import {isEmptyString, isString} from '../validateFns'
-import {parseConfig} from '../velcro.config'
+import {readConfig} from '../velcro.config'
 import type {DocumentFields, DocumentId, Documents, Index, IndexName} from '../velcro.model'
 
 export interface VelcroTestStrapOptions {
@@ -51,7 +51,7 @@ export async function createVelcroTestStrap(options: VelcroTestStrapOptions): Pr
     })
 
     if (Object.keys(indexNameReferences).length) {
-        const config = await parseConfig(options.configPath)
+        const config = await readConfig(options.configPath)
         if (config === null) {
             throw new Error(`could not find velcro.yaml, yet test references velcro.yaml indices (${Object.keys(indexNameReferences).join(', ')})`)
         }
