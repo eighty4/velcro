@@ -1,0 +1,38 @@
+name: Velcro Prerelease
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  tests:
+    name: Verify code
+    uses: ./.github/workflows/ci.yaml
+  prerelease:
+    name: Publish @next to npm
+    needs: [tests]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: yarn
+          registry-url: https://registry.npmjs.org
+      - name: Install deps
+        run: yarn
+      - name: Build
+        run: yarn build
+      - name: Increment version
+        id: semver
+        run: echo "version=$(npm version prerelease --no-git-tag-version | tr -d '[:space:]')" >> "$GITHUB_OUTPUT"
+      - name: Publish prerelease
+        run: npm publish --public --tag next
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
+      - name:
+        run: |
+          git config --global user.name "Adam McKee"
+          git config --global user.email "adam.be.g84d@gmail.com"
+          git commit -am "increment @eighty4/velcro@next to ${{steps.semver.outputs.version}}"
+          git push

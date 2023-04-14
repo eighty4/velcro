@@ -12,9 +12,10 @@
     "mapping",
     "document"
   ],
-  "version": "0.0.6",
+  "version": "0.0.7-0",
   "license": "BSD-2-Clause",
   "main": "lib/velcro.exports.js",
+  "types": "lib/velcro.exports.d.ts",
   "bin": "bin/velcro",
   "scripts": {
     "clean": "rimraf lib/**/*.d.ts; rimraf lib/**/*.js",
@@ -42,11 +43,9 @@
     "bin",
     "lib/**/*.d.ts",
     "lib/**/*.js",
-    "lib/**/*.ts",
     "LICENSE",
     "package.json",
-    "README.md",
-    "tsconfig.json"
+    "README.md"
   ],
   "packageManager": "yarn@3.2.3"
 }

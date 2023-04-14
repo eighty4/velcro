@@ -1,13 +1,13 @@
 name: Velcro CI
 
 on:
-  push:
-    branches: [ main ]
+  workflow_call:
   pull_request:
     branches: [ main ]
 
 jobs:
-  build:
+  verify:
+    name: Verify code
     runs-on: ubuntu-latest
     services:
       elasticsearch:
@@ -31,6 +31,7 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: ${{matrix.node-version}}
+          cache: yarn
       - run: yarn
       - run: yarn test
       - run: yarn build
