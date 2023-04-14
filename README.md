@@ -1,31 +1,35 @@
 [![velcro on npm](https://img.shields.io/npm/v/@eighty4/velcro)](https://www.npmjs.com/package/@eighty4/velcro)
-[![CI](https://img.shields.io/github/actions/workflow/status/eighty4/velcro/verify.yaml)](https://github.com/eighty4/velcro/actions/workflows/verify.yaml)
+[![CI](https://img.shields.io/github/actions/workflow/status/eighty4/velcro/prerelease.yaml)](https://github.com/eighty4/velcro/actions/workflows/prerelease.yaml)
 
 # Velcro for Elasticsearch
 
 Create Elasticsearch indices, mappings and documents -- without any code!
 
-No frills, no config!
+No frills, no config! It can't even be configured for an Elasticsearch node other than localhost or a node that needs authentication!
 
-It's so 0.0.6, it can't even be configured for an Elasticsearch node other than localhost or a node that needs authentication!
+### 📌 Caveats
+
+`velcro strap` currently deletes and re-creates indices and is not meant for production data management.
+
+Only happy paths and no testing. Bugs gauranteed!
 
 ## CLI
 
-The CLI currently has one subcommand: `velcro strap`.
+There is one subcommand: `velcro strap`, which will read index mappings from `velcro.yaml` and populate indices with data.
 
 ### Setup methods
 
 Install globally
 
 ```bash
-npm i -g velcro
+npm i -g @eighty4/velcro
 velcro strap
 ```
 
 Or npx it
 
 ```bash
-npx velcro strap
+npx @eighty4/velcro strap
 ```
 
 Or add an npm script and `npm run velcro` it
@@ -43,7 +47,7 @@ Or add an npm script and `npm run velcro` it
 
 ### `strap` command
 
-`velcro strap` will create all indices, mappings and documents found in the current working directory's `velcro.yaml` file
+`velcro strap` will create all index mappings and documents configured in `velcro.yaml`
 
 ```yaml
 ---
@@ -59,10 +63,7 @@ indices:
 
 #### Indexing documents with `velcro strap`
 
-The `documents` key in `velco.yaml` contains yaml sequences of documents organized by environment and index name.
-A document may include an id by specifying it with the `_id` key and nesting the document's fields under the `doc` key.
-
-Documents under `documents.all` will be created any time `velcro strap` is run.
+Documents to be bootstrapped are configured with the `documents` key.
 
 ```yaml
 ---
@@ -85,6 +86,10 @@ documents:
         another_field: this structure will also create a doc with an elasticsearch generated id
 ```
 
+Documents under `documents.all` will be created any time `velcro strap` is run.
+
+### Environment-specific documents
+
 Creating documents for a specific environment, such as `test`, can be done by running `velcro strap --env test` and nesting documents under `documents.test` in `velcro.yaml`:
 
 ```yaml
@@ -103,17 +108,39 @@ documents:
         another_field: velcro strap will always create docs nested under all
 ```
 
+### Specifying a doc's _id
+
+A document may include an id by specifying it with the `_id` key and nesting the document's fields under the `doc` key. The field `id_source` comments on the document's id origin.
+
+```yaml
+---
+indices:
+  my-index-name:
+    properties:
+      id_source: keyword
+
+documents:
+  all:
+    my-index-name:
+      - _id: foobar
+        doc:
+          id_source: MY_VERY_OWN_ID
+      - id_source: GENERATED_DOC_ID
+```
+
 ## Testing
 
 ### `createVelcroTestStrap`
 
-A test strap manages indices and mappings for execution of a test. Indices are created with an alternate name to isolate test state from previous executions.
+A test strap manages indices and mappings for execution of a test and can be created with [createVelcroTestStrap](lib/testing/createVelcroTestStrap.ts).
+`createVelcroTestStrap` will generate unique names for each test's indices that can be removed from Elasticsearch at the end of a test with `cleanup()`.
+
+`createVelcroTestStrap` uses a config object to specify indices and docs, and it also reads `velcro.yaml` so indices can be referenced by name (this will error without `my-index-name` declared in a `velcro.yaml`):
 
 ```javascript
 import {createVelcroTestStrap} from 'velcro'
 
 const velcro = await createVelcroTestStrap({
-    elasticsearch: {client},
     indices: ['my-index-name'],
     documents: [
         {
@@ -128,21 +155,54 @@ const velcro = await createVelcroTestStrap({
 await velcro.cleanup()
 ```
 
-`createVelcroTestStrap` will refresh indices that documents were created in, so they're ready to be searched when `createVelcroTestStrap` completes.
+Indices can also be configured from test code:
 
-Created index names and document ids can be retrieved using `VelcroTestStrap.managedIndexName()`, `VelcroTestStrap.documentIds()` and `VelcroTestStrap.documentId()`.
+```javascript
+const velcro = await createVelcroTestStrap({
+    indices: [{
+        name: 'my-index-name',
+        mappings: {
+            a_field_name: 'text',
+            another_field: 'text',
+        }
+    }],
+    documents: [
+        {
+            a_field_name: "value",
+            another_field: "text",
+        }
+    ]
+})
+```
 
-`velcroTestStrap.managedIndexName('my-index-name')` will return the index name used to isolate testing from other data and operations during the scope of the test.
+📌 `createVelcroTestStrap({configPath})` can be used to read a `velcro.yaml` from a relative path.
 
-`velcroTestStrap.documentsIds('my-index-name')` will return an array of all document ids created for the specified index.
+📌 Documents will not be created from `velcro.yaml` for tests.
 
-`velcroTestStrap.documentsId('my-index-name', 0)` will return a specific document id using the index of the array in `createVelcroTestStrap`'s `opts.documents` array.
+### `VelcroTestStrap`
 
-📌 `createVelcroTestStrap` reads `velcro.yaml` to create indices and mappings and has an option `configPath` to reference a `velcro.yaml` file outside the test's cwd.
-Only indices referenced in the `createVelcroTestStrap` `indices` option will be created, and no documents from `velcro.yaml` will be created.
+`createVelcroTestStrap` returns [VelcroTestStrap](lib/testing/VelcroTestStrap.ts) which includes APIs to assist with Elasticsearch application testing.
 
-## Caveats
+#### `managedIndexName(indexName: string): string`
 
-`velcro strap` currently deletes and re-creates indices and is not meant for production data management.
+Returns the generated index name for the given index mapping.
 
-Only happy paths and no testing. Bugs gauranteed!
+#### `documentIds(indexName: string): Array<string>`
+
+Returns the index's created documents' ids.
+
+#### `documentId(indexName: string, index: number): string`
+
+Returns the doc id of a given index at the specified array index from the `createVelcroTestStrap({documents})` array.
+
+#### `deleteDocuments()`
+
+Delete all managed documents.
+
+#### `deleteIndices()`
+
+Delete all managed indices.
+
+#### `cleanup()`
+
+Delete all managed indices and close Elasticsearch client.
