@@ -18,7 +18,7 @@
   "types": "lib/velcro.exports.d.ts",
   "bin": "bin/velcro",
   "scripts": {
-    "clean": "rimraf lib/**/*.d.ts; rimraf lib/**/*.js",
+    "clean": "rimraf -g lib/**/*.d.ts; rimraf -g lib/**/*.js",
     "prebuild": "pnpm clean",
     "build": "tsc",
     "pretest": "pnpm clean",
