@@ -1,5 +1,5 @@
 [![velcro on npm](https://img.shields.io/npm/v/@eighty4/velcro)](https://www.npmjs.com/package/@eighty4/velcro)
-[![CI](https://img.shields.io/github/actions/workflow/status/eighty4/velcro/prerelease.yaml)](https://github.com/eighty4/velcro/actions/workflows/prerelease.yaml)
+[![CI](https://img.shields.io/github/actions/workflow/status/eighty4/velcro/ci.yaml)](https://github.com/eighty4/velcro/actions/workflows/ci.yaml)
 
 # Velcro for Elasticsearch
 
