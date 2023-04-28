@@ -1,4 +1,4 @@
-import {createElasticsearchClient} from './createElasticsearchClient'
+import {createElasticsearchClient, ElasticsearchClientConfig} from './createElasticsearchClient'
 import {indexDocuments} from './indexDocuments'
 import {initIndex} from './indices'
 import {isEmptyString} from './validateFns'
@@ -6,6 +6,7 @@ import type {Config} from './velcro.config'
 import type {DocumentId, Environment, Index, IndexName} from './velcro.model'
 
 export interface StrapOptions {
+    elasticsearch?: ElasticsearchClientConfig
     environment?: Environment
 }
 
