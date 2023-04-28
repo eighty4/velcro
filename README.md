@@ -5,19 +5,15 @@
 
 Create Elasticsearch indices, mappings and documents -- without any code!
 
-No frills, no config! It can't even be configured for an Elasticsearch node other than localhost or a node that needs authentication!
-
 ### 📌 Caveats
 
 `velcro strap` currently deletes and re-creates indices and is not meant for production data management.
-
-Only happy paths and no testing. Bugs gauranteed!
 
 ## CLI
 
 There is one subcommand: `velcro strap`, which will read index mappings from `velcro.yaml` and populate indices with data.
 
-### Setup methods
+### Getting started
 
 Install globally
 
@@ -44,6 +40,26 @@ Or add an npm script and `npm run velcro` it
   }
 }
 ```
+
+### Configuring Elasticsearch connection
+
+The `velcro` cli uses the following args to configure its connection to Elasticsearch:
+
+#### Username and password authentication
+
+`velcro strap --use-basic-auth` and set `VELCRO_ES_USER` and `VELCRO_ES_PASSWORD` environment variables
+
+#### Bearer token authentication
+
+`velcro strap --use-token-auth` and set `VELCRO_ES_TOKEN` environment variable
+
+#### Api key authentication
+
+`velcro strap --use-api-key-auth` and set `VELCRO_ES_API_KEY` environment variable
+
+#### Skip TLS verification
+
+`velcro strap --skip-tls-verify`
 
 ### `strap` command
 
