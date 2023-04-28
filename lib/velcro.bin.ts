@@ -8,6 +8,9 @@ import type {ElasticsearchAuthMethod, ElasticsearchClientConfig} from './createE
 
 yargs(hideBin(process.argv))
     .options({
+        'node-address': {
+            describe: 'set Elasticsearch node address with protocol, hostname and port'
+        },
         'skip-tls-verify': {
             describe: 'create an insecure tls connection to Elasticsearch',
         },
@@ -40,8 +43,11 @@ yargs(hideBin(process.argv))
     .argv
 
 function createElasticsearchClientConfig(args: ArgumentsCamelCase): ElasticsearchClientConfig {
-    const isArgTrueBool: (arg: any) => boolean = arg => arg === true || arg === 'true'
+    let address: string | undefined
     let auth: ElasticsearchAuthMethod | undefined
+    if (typeof args['node-address'] === 'string') {
+        address = args['node-address']
+    }
     if (isArgTrueBool(args['use-api-key-auth'])) {
         auth = 'apiKey'
     }
@@ -52,11 +58,16 @@ function createElasticsearchClientConfig(args: ArgumentsCamelCase): Elasticsearc
         auth = 'token'
     }
     return {
+        address,
+        auth,
         tls: {
             insecure: isArgTrueBool(args['skip-tls-verify']),
         },
-        auth,
     }
+}
+
+function isArgTrueBool(arg: any): boolean {
+    return arg === true || arg === 'true'
 }
 
 async function executeStrapCommand(options: StrapOptions): Promise<void> {

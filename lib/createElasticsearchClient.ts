@@ -12,7 +12,6 @@ export interface ElasticsearchClientConfig {
 }
 
 export function createElasticsearchClient(config?: ElasticsearchClientConfig): Client {
-    // todo parameterize bin to configure es client
     return new Client(createElasticsearchClientOptions(config))
 }
 
