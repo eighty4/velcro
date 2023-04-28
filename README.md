@@ -45,6 +45,10 @@ Or add an npm script and `npm run velcro` it
 
 The `velcro` cli uses the following args to configure its connection to Elasticsearch:
 
+#### Elasticsearch node address
+
+`velcro strap --node-address https://us-central-1.big-searchable-startup.com`
+
 #### Username and password authentication
 
 `velcro strap --use-basic-auth` and set `VELCRO_ES_USER` and `VELCRO_ES_PASSWORD` environment variables
