@@ -9,7 +9,7 @@ import type {ElasticsearchAuthMethod, ElasticsearchClientConfig} from './createE
 yargs(hideBin(process.argv))
     .options({
         'node-address': {
-            describe: 'set Elasticsearch node address with protocol, hostname and port'
+            describe: 'set Elasticsearch node address with protocol, hostname and port',
         },
         'skip-tls-verify': {
             describe: 'create an insecure tls connection to Elasticsearch',
@@ -38,6 +38,10 @@ yargs(hideBin(process.argv))
             elasticsearch: createElasticsearchClientConfig(args),
             environment: args.environment as string,
         }),
+    })
+    .command('$0', 'the default command', () => {
+    }, (argv) => {
+        console.log('run `velcro strap` or `velcro strap --help` to get started')
     })
     .strict()
     .argv
@@ -74,10 +78,11 @@ async function executeStrapCommand(options: StrapOptions): Promise<void> {
     const {strap} = await import('./velcro.strap')
     try {
         const result = await strap(await getConfigFromCwd(), options)
-        const indicesStatus = `created ${result.created.indices.length} ${result.created.indices.length === 1 ? 'index' : 'indices'}`
-        const documentsStatus = `${Object.keys(result.created.documents).length} document${Object.keys(result.created.documents).length === 1 ? '' : 's'}`
-        console.log(`${indicesStatus} and ${documentsStatus}`)
-        result.created.indices.length
+        const indicesCount = result.created.indices.length
+        const docsCount = Object.keys(result.created.documents).length
+        const indices = `created ${indicesCount} ${indicesCount === 1 ? 'index' : 'indices'}`
+        const documents = `${docsCount} document${docsCount === 1 ? '' : 's'}`
+        console.log(`${indices} and ${documents}`)
     } catch (e: any) {
         console.log('velcro strap error:', e.message)
         process.exit(1)
