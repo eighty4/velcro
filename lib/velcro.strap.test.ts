@@ -17,7 +17,7 @@ indices:
       test-text: text
 `) as Config
 
-        const result = await strap(config, {})
+        const result = await strap(config, {configFile: 'velcro.yaml'})
         expect(result.created.indices[0].name).toBe(indexName)
         expect(await getIndexMappingProperties(indexName)).toEqual({
             'test-bool': {type: 'boolean'},

@@ -2,7 +2,7 @@ import type {ArgumentsCamelCase} from 'yargs'
 import yargs from 'yargs/yargs'
 import {hideBin} from 'yargs/helpers'
 
-import {type Config, readConfig} from './velcro.config'
+import {type Config, readConfig, normalizeConfigPath} from './velcro.config'
 import type {StrapOptions} from './velcro.strap'
 import type {ElasticsearchAuthMethod, ElasticsearchClientConfig} from './createElasticsearchClient'
 
@@ -33,8 +33,14 @@ yargs(hideBin(process.argv))
         describe: 'initialize Elasticsearch with index mappings and documents',
         builder: (y) => y.options({
             environment: {alias: 'env', describe: 'environment to initialize'},
+            'config-file': {
+                describe: 'path to velcro yml config file',
+                default: 'velcro.yaml',
+                configParser: normalizeConfigPath as any,
+            },
         }),
         handler: async (args) => executeStrapCommand({
+            configFile: args.configFile as string,
             elasticsearch: createElasticsearchClientConfig(args),
             environment: args.environment as string,
         }),
@@ -77,7 +83,8 @@ function isArgTrueBool(arg: any): boolean {
 async function executeStrapCommand(options: StrapOptions): Promise<void> {
     const {strap} = await import('./velcro.strap')
     try {
-        const result = await strap(await getConfigFromCwd(), options)
+        const config = await getConfigFromVelcroYaml(options.configFile)
+        const result = await strap(config, options)
         const indicesCount = result.created.indices.length
         const docsCount = Object.keys(result.created.documents).length
         const indices = `created ${indicesCount} ${indicesCount === 1 ? 'index' : 'indices'}`
@@ -89,16 +96,16 @@ async function executeStrapCommand(options: StrapOptions): Promise<void> {
     }
 }
 
-async function getConfigFromCwd(): Promise<Config> {
+async function getConfigFromVelcroYaml(configFile: string): Promise<Config> {
     let config: Config | null = null
     let error: string | null = null
     try {
-        config = await readConfig()
+        config = await readConfig(configFile)
     } catch (e: any) {
         error = e.message
     }
     if (!config && !error) {
-        error = 'velcro.yaml not found in cwd'
+        error = 'velcro.yaml not found ' + configFile === 'velcro.yaml' ? 'in cwd' : 'at ' + configFile
     }
     if (error) {
         console.log(`unable to read velcro config: ${error}`)

@@ -19,12 +19,7 @@ export async function readConfig(configPath?: string): Promise<Config | null> {
 }
 
 async function readConfigFileContent(configPath?: string): Promise<string | null> {
-    if (!configPath) {
-        configPath = process.cwd()
-    }
-    if (!configPath.endsWith('velcro.yaml')) {
-        configPath = joinPath(configPath, 'velcro.yaml')
-    }
+    configPath = normalizeConfigPath(configPath)
     try {
         return (await readFile(configPath)).toString('utf-8')
     } catch (e: any) {
@@ -34,6 +29,16 @@ async function readConfigFileContent(configPath?: string): Promise<string | null
             throw new Error(`velcro.yaml read error: ${e.message}`)
         }
     }
+}
+
+export function normalizeConfigPath(configPath?: string): string {
+    if (!configPath) {
+        configPath = process.cwd()
+    }
+    if (!configPath.endsWith('velcro.yaml')) {
+        configPath = joinPath(configPath, 'velcro.yaml')
+    }
+    return configPath
 }
 
 export async function parseConfig(configYaml: string): Promise<Config | null> {

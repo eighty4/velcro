@@ -6,6 +6,7 @@ import type {Config} from './velcro.config'
 import type {DocumentId, Environment, Index, IndexName} from './velcro.model'
 
 export interface StrapOptions {
+    configFile: string
     elasticsearch?: ElasticsearchClientConfig
     environment?: Environment
 }
