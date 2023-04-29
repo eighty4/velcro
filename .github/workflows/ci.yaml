@@ -34,7 +34,7 @@ jobs:
           --health-timeout 5s
     strategy:
       matrix:
-        node-version: [ 18, 19, 20 ]
+        node-version: [ 18, 20 ]
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
@@ -48,7 +48,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [ 18, 19, 20 ]
+        node-version: [ 18, 20 ]
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
