@@ -1,4 +1,4 @@
-import {isString, isEmptyString, isValidMappingType} from './validateFns'
+import {isEmptyString, isString, isValidMappingType} from './validateFns'
 
 describe('validateFns', () => {
 
@@ -26,7 +26,7 @@ describe('validateFns', () => {
 
     describe('isValidMappingType', () => {
 
-        it(`evaluates whether a value is 'keyword', 'text', 'date', or 'boolean'`, () => {
+        it('evaluates whether a value is `keyword`, `text`, `date`, or `boolean`', () => {
             expect(isValidMappingType('keyword')).toBe(true)
             expect(isValidMappingType('text')).toBe(true)
             expect(isValidMappingType('date')).toBe(true)

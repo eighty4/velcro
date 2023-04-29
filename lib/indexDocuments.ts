@@ -1,6 +1,6 @@
 import type {Client} from '@elastic/elasticsearch'
 
-import type {DocumentId, DocumentIds, Documents, Document, IndexName} from './velcro.model'
+import type {Document, DocumentId, DocumentIds, Documents, IndexName} from './velcro.model'
 
 export async function indexDocument(client: Client, index: string, document: Document): Promise<DocumentId> {
     try {

@@ -15,6 +15,30 @@ export class VelcroTestStrap {
                 private readonly _managed: ManagedIndices) {
     }
 
+    get managedIndexNames(): Record<IndexName, IndexName> {
+        const names: Record<IndexName, IndexName> = {}
+        for (const indexName in this._managed) {
+            names[indexName] = this._managed[indexName].managedTestName
+        }
+        return names
+    }
+
+    get elasticsearchClient(): Client {
+        return this._client
+    }
+
+    get managedDocuments(): ManagedIndices {
+        const copy: ManagedIndices = {}
+        for (const indexName in this._managed) {
+            const index = this._managed[indexName]
+            copy[indexName] = {
+                ...index,
+                documents: [...index.documents],
+            }
+        }
+        return copy
+    }
+
     async cleanup(skipClosingElasticsearchClient?: boolean): Promise<void> {
         await this.deleteIndices()
         const closeClient = !(skipClosingElasticsearchClient === true)
@@ -46,14 +70,6 @@ export class VelcroTestStrap {
         return this._managed[index].managedTestName
     }
 
-    get managedIndexNames(): Record<IndexName, IndexName> {
-        const names: Record<IndexName, IndexName> = {}
-        for (const indexName in this._managed) {
-            names[indexName] = this._managed[indexName].managedTestName
-        }
-        return names
-    }
-
     documentId(indexName: IndexName, i: number): DocumentId {
         const documentIds = this.documentIds(indexName)
         if (i >= documentIds.length) {
@@ -70,21 +86,5 @@ export class VelcroTestStrap {
             throw new Error(`no index state for ${indexName}`)
         }
         return [...index.documents]
-    }
-
-    get elasticsearchClient(): Client {
-        return this._client
-    }
-
-    get managedDocuments(): ManagedIndices {
-        const copy: ManagedIndices = {}
-        for (const indexName in this._managed) {
-            const index = this._managed[indexName]
-            copy[indexName] = {
-                ...index,
-                documents: [...index.documents],
-            }
-        }
-        return copy
     }
 }

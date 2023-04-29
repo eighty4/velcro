@@ -2,7 +2,7 @@ export type DocumentId = string
 
 export type DocumentFields = any
 
-export type Document = {_id?: DocumentId, doc: DocumentFields}
+export type Document = { _id?: DocumentId, doc: DocumentFields }
 
 export type Documents = Record<IndexName, Array<Document>>
 

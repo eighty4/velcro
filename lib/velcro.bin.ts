@@ -2,7 +2,7 @@ import type {ArgumentsCamelCase} from 'yargs'
 import yargs from 'yargs/yargs'
 import {hideBin} from 'yargs/helpers'
 
-import {type Config, readConfig, normalizeConfigPath} from './velcro.config'
+import {type Config, normalizeConfigPath, readConfig} from './velcro.config'
 import type {StrapOptions} from './velcro.strap'
 import type {ElasticsearchAuthMethod, ElasticsearchClientConfig} from './createElasticsearchClient'
 
@@ -45,8 +45,7 @@ yargs(hideBin(process.argv))
             environment: args.environment as string,
         }),
     })
-    .command('$0', 'the default command', () => {
-    }, (argv) => {
+    .command('$0', 'the default command', undefined, () => {
         console.log('run `velcro strap` or `velcro strap --help` to get started')
     })
     .strict()

@@ -3,12 +3,12 @@ export {createVelcroTestStrap} from './testing/createVelcroTestStrap'
 export {
     VelcroTestStrap,
     type ManagedIndex,
-    type ManagedIndices
+    type ManagedIndices,
 } from './testing/VelcroTestStrap'
 
 export type {
     ElasticsearchClient,
-    VelcroTestStrapOptions
+    VelcroTestStrapOptions,
 } from './testing/createVelcroTestStrap'
 
 export type {
