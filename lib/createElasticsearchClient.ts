@@ -28,7 +28,7 @@ export function createElasticsearchClientOptions(config?: ElasticsearchClientCon
         }
     }
     if (config.tls?.insecure === true) {
-        clientOptions.tls = {checkServerIdentity: () => undefined}
+        clientOptions.tls = {rejectUnauthorized: false}
     }
     if (config.auth === 'basic') {
         const {

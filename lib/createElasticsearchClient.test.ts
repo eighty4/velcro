@@ -1,5 +1,4 @@
 import {createElasticsearchClientOptions} from './createElasticsearchClient'
-import {BearerAuth} from '@elastic/elasticsearch'
 import {PeerCertificate} from 'tls'
 
 describe('createElasticsearchClientOptions', () => {
@@ -36,7 +35,7 @@ describe('createElasticsearchClientOptions', () => {
         process.env.VELCRO_ES_PASSWORD = 'password'
         expect(createElasticsearchClientOptions({auth: 'basic'}).auth).toStrictEqual({
             username: 'user',
-            password: 'password'
+            password: 'password',
         })
     })
 
@@ -48,14 +47,12 @@ describe('createElasticsearchClientOptions', () => {
 
     it('token auth prepends Bearer prefix', () => {
         process.env.VELCRO_ES_TOKEN = 'token'
-        expect((createElasticsearchClientOptions({auth: 'token'}).auth as BearerAuth).bearer)
-            .toBe('Bearer token')
+        expect(createElasticsearchClientOptions({auth: 'token'}).auth).toStrictEqual({bearer: 'Bearer token'})
     })
 
     it('token auth happy path', () => {
         process.env.VELCRO_ES_TOKEN = 'Bearer token'
-        expect((createElasticsearchClientOptions({auth: 'token'}).auth as BearerAuth).bearer)
-            .toBe('Bearer token')
+        expect((createElasticsearchClientOptions({auth: 'token'}).auth)).toStrictEqual({bearer: 'Bearer token'})
     })
 
     it('api key auth throws error when api key env var missing', () => {
@@ -70,10 +67,10 @@ describe('createElasticsearchClientOptions', () => {
     })
 
     it('insecure tls', () => {
-        const clientOptions = createElasticsearchClientOptions({tls: {insecure: true}})
-        expect(clientOptions.tls?.checkServerIdentity).toBeDefined()
-        expect(typeof clientOptions.tls?.checkServerIdentity).toBe('function')
-        expect(clientOptions.tls?.checkServerIdentity?.('hostname', {} as PeerCertificate)).toBeUndefined()
+        expect(createElasticsearchClientOptions({tls: {insecure: true}}).tls?.rejectUnauthorized).toBe(false)
+        expect(createElasticsearchClientOptions({tls: {insecure: false}}).tls).toBeUndefined()
+        expect(createElasticsearchClientOptions({tls: {}}).tls).toBeUndefined()
+        expect(createElasticsearchClientOptions({}).tls).toBeUndefined()
     })
 
 })
