@@ -1,0 +1,12 @@
+---
+
+# docker exec -it velcro-elasticsearch-tls /usr/share/elasticsearch/bin/elasticsearch-reset-password -u elastic
+
+services:
+  elasticsearch-tls:
+    container_name: velcro-elasticsearch-tls
+    image: elasticsearch:8.7.0
+    ports:
+      - "9200:9200"
+    environment:
+      discovery.type: single-node
