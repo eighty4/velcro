@@ -127,7 +127,7 @@ export async function createVelcroTestStrap(options: VelcroTestStrapOptions): Pr
             managed[indexName].documents = indexingResult.documentIds[managedTestName]
         }
 
-        if (typeof options.refreshIndices === 'undefined' || options.refreshIndices === true) {
+        if (typeof options.refreshIndices === 'undefined' || options.refreshIndices) {
             await client.indices.refresh({
                 index: Object.keys(options.documents).map(indexName => managed[indexName].managedTestName),
             })
