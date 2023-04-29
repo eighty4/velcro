@@ -7,6 +7,11 @@ describe('createElasticsearchClientOptions', () => {
         expect(clientOptions.node).toBe('http://127.0.0.1:9200')
     })
 
+    it('handles https prefix with boolean logic', () => {
+        const clientOptions = createElasticsearchClientOptions({address: 'https://127.0.0.1:9200'})
+        expect(clientOptions.node).toBe('https://127.0.0.1:9200')
+    })
+
     it('defaults to localhost when address missing', () => {
         const clientOptions = createElasticsearchClientOptions({})
         expect(clientOptions.node).toBe('http://localhost:9200')

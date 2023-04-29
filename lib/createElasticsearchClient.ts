@@ -21,10 +21,10 @@ export function createElasticsearchClientOptions(config?: ElasticsearchClientCon
         return clientOptions
     }
     if (config.address) {
-        if (!config.address.startsWith('http://') || !config.address.startsWith('https://')) {
-            clientOptions.node = 'http://' + config.address
-        } else {
+        if (config.address.startsWith('http://') || config.address.startsWith('https://')) {
             clientOptions.node = config.address
+        } else {
+            clientOptions.node = 'http://' + config.address
         }
     }
     if (config.tls?.insecure === true) {
