@@ -1,2 +1,3 @@
 #!/usr/bin/env node
-require('../lib/velcro.bin')
+const {VelcroCLI} = require('../lib/velcro.cli')
+VelcroCLI.initialize().execute().then(() => {})
