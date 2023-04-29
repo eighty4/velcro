@@ -6,10 +6,7 @@ export {
     type ManagedIndices,
 } from './testing/VelcroTestStrap'
 
-export type {
-    ElasticsearchClient,
-    VelcroTestStrapOptions,
-} from './testing/createVelcroTestStrap'
+export type {VelcroTestStrapOptions} from './testing/createVelcroTestStrap'
 
 export type {
     DocumentId,

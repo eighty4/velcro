@@ -11,21 +11,10 @@ import type {DocumentFields, DocumentId, Documents, Index, IndexName} from '../v
 export interface VelcroTestStrapOptions {
     configPath?: string
     documents?: Record<IndexName, Array<DocumentFields> | Record<DocumentId, DocumentFields>>
-    elasticsearch: ElasticsearchClient | (() => ElasticsearchClient)
+    elasticsearch: Partial<Client> | (() => Partial<Client>)
     indices: Array<IndexName | Index>
     managedTestIndexNameFn?: ManagedTestIndexNameFn
     refreshIndices?: boolean
-}
-
-export type ElasticsearchClient = {
-    close: () => Promise<void>
-    delete: any,
-    index: any,
-    indices: {
-        create: any,
-        delete: any,
-        refresh: any,
-    },
 }
 
 export type ManagedTestIndexNameFn = (indexName: string) => string
