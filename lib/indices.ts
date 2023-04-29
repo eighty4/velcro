@@ -33,7 +33,9 @@ async function deleteIndex(client: Client, index: IndexName, catchIndexNotFound?
     }
 }
 
-function elasticErrorType(e: any): string | undefined {
+type ElasticsearchError = { meta?: { body?: { error?: { type?: string } } } }
+
+function elasticErrorType(e?: ElasticsearchError): string | undefined {
     if (e && e.meta && e.meta.body && e.meta.body.error && e.meta.body.error.type) {
         return e.meta.body.error.type
     }

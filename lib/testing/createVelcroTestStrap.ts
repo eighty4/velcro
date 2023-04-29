@@ -74,7 +74,7 @@ export async function createVelcroTestStrap(options: VelcroTestStrapOptions): Pr
                 if (!Array.isArray(options.documents[indexName])) {
                     throw new Error(`options.documents['${indexName}'] is not an array`)
                 }
-                options.documents[indexName].forEach((document: any, i: number) => {
+                options.documents[indexName].forEach((document: DocumentFields, i: number) => {
                     if (document && !Object.keys(document).length) {
                         throw new Error(`options.documents['${indexName}'][${i}] is an empty object`)
                     }
@@ -109,7 +109,7 @@ export async function createVelcroTestStrap(options: VelcroTestStrapOptions): Pr
             const {managedTestName} = managed[indexName]
             documents[managedTestName] = []
             if (Array.isArray(options.documents[indexName])) {
-                for (const doc of options.documents[indexName] as Array<any>) {
+                for (const doc of options.documents[indexName] as Array<DocumentFields>) {
                     documents[managedTestName].push({doc})
                 }
             } else {
