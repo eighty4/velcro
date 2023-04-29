@@ -34,7 +34,7 @@ Or add an npm script and `npm run velcro` it
     "velcro": "velcro strap"
   },
   "devDependencies": {
-    "velcro": "0.0.6"
+    "@eighty4/velcro": "0.0.6"
   }
 }
 ```
