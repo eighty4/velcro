@@ -105,7 +105,7 @@ async function getConfigFromVelcroYaml(configFile: string): Promise<Config> {
         error = e.message
     }
     if (!config && !error) {
-        error = 'velcro.yaml not found ' + configFile === 'velcro.yaml' ? 'in cwd' : 'at ' + configFile
+        error = 'velcro.yaml not found ' + (configFile === 'velcro.yaml' ? 'in cwd' : 'at ' + configFile)
     }
     if (error) {
         console.log(`unable to read velcro config: ${error}`)

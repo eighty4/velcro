@@ -43,6 +43,10 @@ Or add an npm script and `npm run velcro` it
 
 The `velcro` cli uses the following args to configure its connection to Elasticsearch:
 
+#### Location of `velcro.yaml` config
+
+`velcro strap --config-file path/to/velcro.yaml`
+
 #### Elasticsearch node address
 
 `velcro strap --node-address https://us-central-1.big-searchable-startup.com`
