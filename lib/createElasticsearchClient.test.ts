@@ -1,5 +1,4 @@
 import {createElasticsearchClientOptions} from './createElasticsearchClient'
-import {PeerCertificate} from 'tls'
 
 describe('createElasticsearchClientOptions', () => {
 

@@ -19,7 +19,7 @@ export interface StrapResult {
 }
 
 export async function strap(config: Config, options: StrapOptions): Promise<StrapResult> {
-    const es = createElasticsearchClient()
+    const es = createElasticsearchClient(options.elasticsearch)
 
     if (!isEmptyString(options.environment) && !config.documents[options.environment as string]) {
         throw new Error(`strap for env ${options.environment} without any ${options.environment} specific config`)
