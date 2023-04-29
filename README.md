@@ -5,9 +5,7 @@
 
 Create Elasticsearch indices, mappings and documents -- without any code!
 
-### 📌 Caveats
-
-`velcro strap` currently deletes and re-creates indices and is not meant for production data management.
+📌 `velcro strap` currently deletes and re-creates indices and is not meant for production data management.
 
 ## CLI
 
