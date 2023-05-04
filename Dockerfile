@@ -6,9 +6,9 @@ ENTRYPOINT ["tail", "-f", "/dev/null"]
 
 FROM gcr.io/distroless/nodejs:18
 WORKDIR /velcro
-COPY --from=installed /usr/local/lib/node_modules/@eighty4/velcro /velcro
+COPY --from=installed /usr/local/lib/node_modules/@eighty4/velcro /opt/eighty4/velcro
 ENV NODE_ENV production
-ENTRYPOINT ["/nodejs/bin/node", "bin/velcro"]
+ENTRYPOINT ["/nodejs/bin/node", "/opt/eighty4/velcro/bin/velcro"]
 
 # the following is a Dockerfile build that would build from source vs installing a released version
 
