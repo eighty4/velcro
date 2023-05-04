@@ -98,3 +98,23 @@ jobs:
           git config --global user.email "adam.be.g84d@gmail.com"
           git commit -am "increment @eighty4/velcro@next to ${{steps.semver.outputs.version}}"
           git push
+    outputs:
+      version: ${{steps.semver.outputs.version}}
+
+  docker:
+    name: Docker build and push
+    needs: publish-prerelease
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: docker/login-action@v2
+        with:
+          username: 84tech
+          password: ${{secrets.DOCKERHUB_TOKEN}}
+      - name: docker
+        env:
+          VERSION: ${{needs.publish-prerelease.outputs.version}}
+        run: |
+          cd data
+          docker build -t --build-arg VELCRO_VERSION=$VERSION 84tech/velcro:$VERSION .
+          docker push 84tech/velcro:$VERSION
