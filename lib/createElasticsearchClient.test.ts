@@ -2,6 +2,14 @@ import {createElasticsearchClientOptions} from './createElasticsearchClient'
 
 describe('createElasticsearchClientOptions', () => {
 
+    beforeEach(() => {
+        delete process.env.VELCRO_ES_HOST
+        delete process.env.VELCRO_ES_USER
+        delete process.env.VELCRO_ES_PASSWORD
+        delete process.env.VELCRO_ES_TOKEN
+        delete process.env.VELCRO_ES_API_KEY
+    })
+
     it('prepends http when address protocol missing', () => {
         const clientOptions = createElasticsearchClientOptions({address: '127.0.0.1:9200'})
         expect(clientOptions.node).toBe('http://127.0.0.1:9200')
@@ -22,14 +30,24 @@ describe('createElasticsearchClientOptions', () => {
         expect(clientOptions.node).toBe('http://localhost:9200')
     })
 
+    it('env variable overrides default without config object', () => {
+        process.env.VELCRO_ES_HOST = 'http://prod.elasticsearch'
+        const clientOptions = createElasticsearchClientOptions()
+        expect(clientOptions.node).toBe('http://prod.elasticsearch')
+    })
+
+    it('env variable overrides config object', () => {
+        process.env.VELCRO_ES_HOST = 'http://prod.elasticsearch'
+        const clientOptions = createElasticsearchClientOptions({address: 'http://dev.elasticsearch'})
+        expect(clientOptions.node).toBe('http://prod.elasticsearch')
+    })
+
     it('basic auth throws error when user env var missing', () => {
-        delete process.env.VELCRO_ES_USER
         expect(() => createElasticsearchClientOptions({auth: 'basic'}))
             .toThrow('--use-basic-auth requires VELCRO_ES_USER and VELCRO_ES_PASSWORD env vars')
     })
 
     it('basic auth throws error when password env var missing', () => {
-        delete process.env.VELCRO_ES_PASSWORD
         expect(() => createElasticsearchClientOptions({auth: 'basic'}))
             .toThrow('--use-basic-auth requires VELCRO_ES_USER and VELCRO_ES_PASSWORD env vars')
     })
@@ -44,7 +62,6 @@ describe('createElasticsearchClientOptions', () => {
     })
 
     it('token auth throws error when token env var missing', () => {
-        delete process.env.VELCRO_ES_TOKEN
         expect(() => createElasticsearchClientOptions({auth: 'token'}))
             .toThrow('--use-token-auth requires VELCRO_ES_TOKEN env var')
     })

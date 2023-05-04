@@ -15,18 +15,9 @@ export function createElasticsearchClient(config?: ElasticsearchClientConfig): C
     return new Client(createElasticsearchClientOptions(config))
 }
 
-export function createElasticsearchClientOptions(config?: ElasticsearchClientConfig): ClientOptions {
-    const clientOptions: ClientOptions = {node: 'http://localhost:9200'}
-    if (!config) {
-        return clientOptions
-    }
-    if (config.address) {
-        if (config.address.startsWith('http://') || config.address.startsWith('https://')) {
-            clientOptions.node = config.address
-        } else {
-            clientOptions.node = 'http://' + config.address
-        }
-    }
+export function createElasticsearchClientOptions(providedConfig?: ElasticsearchClientConfig): ClientOptions {
+    const config: ElasticsearchClientConfig = providedConfig || {address: 'http://localhost:9200'}
+    const clientOptions: ClientOptions = {node: resolveNodeAddress(config)}
     if (config.tls?.insecure === true) {
         clientOptions.tls = {rejectUnauthorized: false}
     }
@@ -56,4 +47,16 @@ export function createElasticsearchClientOptions(config?: ElasticsearchClientCon
         clientOptions.auth = {apiKey}
     }
     return clientOptions
+}
+
+function resolveNodeAddress(config: ElasticsearchClientConfig): string {
+    let address = process.env.VELCRO_ES_HOST || config.address
+    if (address) {
+        if (!(address.startsWith('http://') || address.startsWith('https://'))) {
+            address = 'http://' + address
+        }
+    } else {
+        address = 'http://localhost:9200'
+    }
+    return address
 }
