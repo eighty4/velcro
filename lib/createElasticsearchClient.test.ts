@@ -4,6 +4,7 @@ describe('createElasticsearchClientOptions', () => {
 
     beforeEach(() => {
         delete process.env.VELCRO_ES_HOST
+        delete process.env.VELCRO_ES_AUTH
         delete process.env.VELCRO_ES_USER
         delete process.env.VELCRO_ES_PASSWORD
         delete process.env.VELCRO_ES_TOKEN
@@ -30,13 +31,13 @@ describe('createElasticsearchClientOptions', () => {
         expect(clientOptions.node).toBe('http://localhost:9200')
     })
 
-    it('env variable overrides default without config object', () => {
+    it('env variable overrides default node address without config object', () => {
         process.env.VELCRO_ES_HOST = 'http://prod.elasticsearch'
         const clientOptions = createElasticsearchClientOptions()
         expect(clientOptions.node).toBe('http://prod.elasticsearch')
     })
 
-    it('env variable overrides config object', () => {
+    it('env variable overrides config object node address', () => {
         process.env.VELCRO_ES_HOST = 'http://prod.elasticsearch'
         const clientOptions = createElasticsearchClientOptions({address: 'http://dev.elasticsearch'})
         expect(clientOptions.node).toBe('http://prod.elasticsearch')
@@ -71,13 +72,19 @@ describe('createElasticsearchClientOptions', () => {
         expect(createElasticsearchClientOptions({auth: 'token'}).auth).toStrictEqual({bearer: 'Bearer token'})
     })
 
+    it('env variable overrides config object', () => {
+        process.env.VELCRO_ES_AUTH = 'apiKey'
+        process.env.VELCRO_ES_API_KEY = 'api key'
+        process.env.VELCRO_ES_TOKEN = 'token'
+        expect(createElasticsearchClientOptions({auth: 'token'}).auth).toStrictEqual({apiKey: 'api key'})
+    })
+
     it('token auth happy path', () => {
         process.env.VELCRO_ES_TOKEN = 'Bearer token'
         expect((createElasticsearchClientOptions({auth: 'token'}).auth)).toStrictEqual({bearer: 'Bearer token'})
     })
 
     it('api key auth throws error when api key env var missing', () => {
-        delete process.env.VELCRO_ES_API_KEY
         expect(() => createElasticsearchClientOptions({auth: 'apiKey'}))
             .toThrow('--use-api-key-auth requires VELCRO_ES_API_KEY env var')
     })

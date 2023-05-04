@@ -3,6 +3,8 @@ import type {ClientOptions} from '@elastic/elasticsearch/lib/client'
 
 export type ElasticsearchAuthMethod = 'apiKey' | 'basic' | 'token'
 
+export type ElasticsearchAuth = { apiKey: string } | { bearer: string } | { username: string; password: string }
+
 export interface ElasticsearchClientConfig {
     address?: string,
     auth?: ElasticsearchAuthMethod
@@ -21,31 +23,7 @@ export function createElasticsearchClientOptions(providedConfig?: ElasticsearchC
     if (config.tls?.insecure === true) {
         clientOptions.tls = {rejectUnauthorized: false}
     }
-    if (config.auth === 'basic') {
-        const {
-            VELCRO_ES_USER: username,
-            VELCRO_ES_PASSWORD: password,
-        } = process.env
-        if (!username || !password) {
-            throw new Error('--use-basic-auth requires VELCRO_ES_USER and VELCRO_ES_PASSWORD env vars')
-        }
-        clientOptions.auth = {username, password}
-    } else if (config.auth === 'token') {
-        let {VELCRO_ES_TOKEN: bearer} = process.env
-        if (!bearer) {
-            throw new Error('--use-token-auth requires VELCRO_ES_TOKEN env var')
-        }
-        if (!bearer.startsWith('Bearer ')) {
-            bearer = 'Bearer ' + bearer
-        }
-        clientOptions.auth = {bearer}
-    } else if (config.auth === 'apiKey') {
-        const {VELCRO_ES_API_KEY: apiKey} = process.env
-        if (!apiKey) {
-            throw new Error('--use-api-key-auth requires VELCRO_ES_API_KEY env var')
-        }
-        clientOptions.auth = {apiKey}
-    }
+    clientOptions.auth = resolveAuth(config)
     return clientOptions
 }
 
@@ -59,4 +37,33 @@ function resolveNodeAddress(config: ElasticsearchClientConfig): string {
         address = 'http://localhost:9200'
     }
     return address
+}
+
+function resolveAuth(config: ElasticsearchClientConfig): ElasticsearchAuth | undefined {
+    switch (process.env.VELCRO_ES_AUTH || config.auth) {
+        case 'apiKey':
+            const {VELCRO_ES_API_KEY: apiKey} = process.env
+            if (!apiKey) {
+                throw new Error('--use-api-key-auth requires VELCRO_ES_API_KEY env var')
+            }
+            return {apiKey}
+        case 'basic':
+            const {
+                VELCRO_ES_USER: username,
+                VELCRO_ES_PASSWORD: password,
+            } = process.env
+            if (!username || !password) {
+                throw new Error('--use-basic-auth requires VELCRO_ES_USER and VELCRO_ES_PASSWORD env vars')
+            }
+            return {username, password}
+        case 'token':
+            let {VELCRO_ES_TOKEN: bearer} = process.env
+            if (!bearer) {
+                throw new Error('--use-token-auth requires VELCRO_ES_TOKEN env var')
+            }
+            if (!bearer.startsWith('Bearer ')) {
+                bearer = 'Bearer ' + bearer
+            }
+            return {bearer}
+    }
 }
