@@ -115,6 +115,5 @@ jobs:
         env:
           VERSION: ${{needs.publish-prerelease.outputs.version}}
         run: |
-          cd data
           docker build -t --build-arg VELCRO_VERSION=$VERSION 84tech/velcro:$VERSION .
           docker push 84tech/velcro:$VERSION
