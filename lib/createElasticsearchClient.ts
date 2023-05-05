@@ -1,5 +1,6 @@
 import {Client} from '@elastic/elasticsearch'
 import type {ClientOptions} from '@elastic/elasticsearch/lib/client'
+import type {ConnectionOptions} from 'tls'
 
 export type ElasticsearchAuthMethod = 'apiKey' | 'basic' | 'token'
 
@@ -19,12 +20,11 @@ export function createElasticsearchClient(config?: ElasticsearchClientConfig): C
 
 export function createElasticsearchClientOptions(providedConfig?: ElasticsearchClientConfig): ClientOptions {
     const config: ElasticsearchClientConfig = providedConfig || {address: 'http://localhost:9200'}
-    const clientOptions: ClientOptions = {node: resolveNodeAddress(config)}
-    if (config.tls?.insecure === true) {
-        clientOptions.tls = {rejectUnauthorized: false}
+    return {
+        auth: resolveAuth(config),
+        node: resolveNodeAddress(config),
+        tls: resolveConnectionOptions(config),
     }
-    clientOptions.auth = resolveAuth(config)
-    return clientOptions
 }
 
 function resolveNodeAddress(config: ElasticsearchClientConfig): string {
@@ -65,5 +65,12 @@ function resolveAuth(config: ElasticsearchClientConfig): ElasticsearchAuth | und
                 bearer = 'Bearer ' + bearer
             }
             return {bearer}
+    }
+}
+
+function resolveConnectionOptions(config: ElasticsearchClientConfig): ConnectionOptions | undefined {
+    const {VELCRO_ES_SKIP_TLS_VERIFY: envVar} = process.env
+    if (envVar === 'true' || (config.tls?.insecure === true && envVar !== 'false')) {
+        return {rejectUnauthorized: false}
     }
 }

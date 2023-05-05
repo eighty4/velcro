@@ -4,6 +4,7 @@ describe('createElasticsearchClientOptions', () => {
 
     beforeEach(() => {
         delete process.env.VELCRO_ES_HOST
+        delete process.env.VELCRO_ES_SKIP_TLS_VERIFY
         delete process.env.VELCRO_ES_AUTH
         delete process.env.VELCRO_ES_USER
         delete process.env.VELCRO_ES_PASSWORD
@@ -99,6 +100,22 @@ describe('createElasticsearchClientOptions', () => {
         expect(createElasticsearchClientOptions({tls: {insecure: false}}).tls).toBeUndefined()
         expect(createElasticsearchClientOptions({tls: {}}).tls).toBeUndefined()
         expect(createElasticsearchClientOptions({}).tls).toBeUndefined()
+
+        process.env.VELCRO_ES_SKIP_TLS_VERIFY = 'false'
+        expect(createElasticsearchClientOptions({tls: {insecure: true}}).tls?.rejectUnauthorized).toBeUndefined()
+
+        process.env.VELCRO_ES_SKIP_TLS_VERIFY = 'true'
+        expect(createElasticsearchClientOptions({tls: {insecure: true}}).tls?.rejectUnauthorized).toBe(false)
+    })
+
+    it('env var overrides enabled skipping tls verify config', () => {
+        process.env.VELCRO_ES_SKIP_TLS_VERIFY = 'false'
+        expect(createElasticsearchClientOptions({tls: {insecure: true}}).tls?.rejectUnauthorized).toBeUndefined()
+    })
+
+    it('env var override enables skipping tls verify config', () => {
+        process.env.VELCRO_ES_SKIP_TLS_VERIFY = 'true'
+        expect(createElasticsearchClientOptions({tls: {insecure: false}}).tls?.rejectUnauthorized).toBe(false)
     })
 
 })
