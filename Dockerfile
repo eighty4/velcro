@@ -2,7 +2,6 @@ FROM node:18-bullseye-slim AS installed
 ARG VELCRO_VERSION=next
 RUN test -n "$VELCRO_VERSION"
 RUN npm install -g @eighty4/velcro@$VELCRO_VERSION
-ENTRYPOINT ["tail", "-f", "/dev/null"]
 
 FROM gcr.io/distroless/nodejs:18
 WORKDIR /velcro
