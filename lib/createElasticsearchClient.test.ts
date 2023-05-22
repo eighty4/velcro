@@ -1,4 +1,5 @@
-import {createElasticsearchClientOptions} from './createElasticsearchClient'
+import {createElasticsearchClient, createElasticsearchClientOptions} from './createElasticsearchClient'
+import type {Logger} from './logger'
 
 describe('createElasticsearchClientOptions', () => {
 
@@ -10,6 +11,13 @@ describe('createElasticsearchClientOptions', () => {
         delete process.env.VELCRO_ES_PASSWORD
         delete process.env.VELCRO_ES_TOKEN
         delete process.env.VELCRO_ES_API_KEY
+    })
+
+    it('creates client and logs address', () => {
+        const logger: Logger = {log: jest.fn()}
+        const client = createElasticsearchClient({}, logger)
+        expect(client).toBeDefined()
+        expect(logger.log).toHaveBeenCalledWith('elasticsearch client configured for', 'http://localhost:9200')
     })
 
     it('prepends http when address protocol missing', () => {

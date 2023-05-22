@@ -18,7 +18,7 @@ export interface ElasticsearchClientConfig {
 export function createElasticsearchClient(config?: ElasticsearchClientConfig, logger?: Logger): Client {
     const clientOptions = createElasticsearchClientOptions(config)
     if (logger) {
-        logger.log('elasticsearch client configured for', config?.address)
+        logger.log('elasticsearch client configured for', clientOptions.node)
     }
     return new Client(clientOptions)
 }
