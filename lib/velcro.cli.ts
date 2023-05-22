@@ -5,7 +5,7 @@ import {hideBin} from 'yargs/helpers'
 import {ConsoleLogger} from './logger'
 import {type Config, normalizeConfigPath, readConfig} from './velcro.config'
 import type {StrapOptions} from './velcro.strap'
-import type {ElasticsearchAuthMethod, ElasticsearchClientConfig} from './createElasticsearchClient'
+import type {ElasticsearchAuthMethod, ElasticsearchClientConfig} from './es.client'
 
 export class VelcroCLI {
 

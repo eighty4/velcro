@@ -1,4 +1,4 @@
-import {createElasticsearchClient, createElasticsearchClientOptions} from './createElasticsearchClient'
+import {createElasticsearchClient, createElasticsearchClientOptions} from './es.client'
 import type {Logger} from './logger'
 
 describe('createElasticsearchClientOptions', () => {

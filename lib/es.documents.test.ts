@@ -1,9 +1,9 @@
-import {createElasticsearchClient} from './createElasticsearchClient'
-import {initIndex} from './indices'
+import {createElasticsearchClient} from './es.client'
+import {initIndex} from './es.indices'
 import {defaultManagedTestIndexNameFn} from './testing/createVelcroTestStrap'
-import {indexDocument, indexDocuments} from './indexDocuments'
+import {indexDocument, indexDocuments} from './es.documents'
 
-describe('indexDocuments.ts', () => {
+describe('es.documents.ts', () => {
 
     describe('indexDocument()', () => {
 
