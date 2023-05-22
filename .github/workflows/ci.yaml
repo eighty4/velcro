@@ -92,7 +92,7 @@ jobs:
         run: npm publish --public --tag next
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
-      - name:
+      - name: Bump ver > git
         run: |
           git config --global user.name "Adam McKee"
           git config --global user.email "adam.be.g84d@gmail.com"
