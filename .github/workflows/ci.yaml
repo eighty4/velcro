@@ -13,7 +13,16 @@ concurrency: publish
 
 jobs:
 
+  cut-release-commit:
+    name: Cut release commit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Check if release commit
+        run: ./.github/workflows/ci-cut-release-commit.sh
+
   verified:
+    needs: cut-release-commit
     uses: ./.github/workflows/verify.yml
 
   prerelease:
