@@ -3,6 +3,10 @@ name: Velcro CI
 on:
   push:
     branches: [ main ]
+    paths-ignore:
+      - ".*ignore"
+      - "LICENSE"
+      - "README.md"
 
 jobs:
 
