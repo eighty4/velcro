@@ -51,5 +51,14 @@ export async function strap(config: Config, options: StrapOptions): Promise<Stra
     if (options.environment) {
         await indexDocuments(es, config.documents[options.environment])
     }
+
+    if (options.logger) {
+        const {length: indicesCount} = result.created.indices
+        const indices = `${indicesCount} ${indicesCount === 1 ? 'index' : 'indices'}`
+        const {length: docsCount} = Object.keys(result.created.documents)
+        const documents = `${docsCount} document${docsCount === 1 ? '' : 's'}`
+        options.logger.log('created', indices, 'and', documents)
+    }
+
     return result
 }

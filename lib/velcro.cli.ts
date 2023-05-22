@@ -86,12 +86,7 @@ class VelcroCommandDispatch implements VelcroCommands {
         const {strap} = await import('./velcro.strap')
         try {
             const config = await getConfigFromVelcroYaml(options.configFile)
-            const result = await strap(config, options)
-            const indicesCount = result.created.indices.length
-            const docsCount = Object.keys(result.created.documents).length
-            const indices = `created ${indicesCount} ${indicesCount === 1 ? 'index' : 'indices'}`
-            const documents = `${docsCount} document${docsCount === 1 ? '' : 's'}`
-            console.log(`${indices} and ${documents}`)
+            await strap(config, options)
         } catch (e: any) {
             console.log('velcro strap error:', e.message)
             process.exit(1)
