@@ -2,6 +2,7 @@ import type {ArgumentsCamelCase} from 'yargs'
 import yargs from 'yargs/yargs'
 import {hideBin} from 'yargs/helpers'
 
+import {ConsoleLogger} from './logger'
 import {type Config, normalizeConfigPath, readConfig} from './velcro.config'
 import type {StrapOptions} from './velcro.strap'
 import type {ElasticsearchAuthMethod, ElasticsearchClientConfig} from './createElasticsearchClient'
@@ -9,7 +10,7 @@ import type {ElasticsearchAuthMethod, ElasticsearchClientConfig} from './createE
 export class VelcroCLI {
 
     static initialize(): VelcroCLI {
-        return new VelcroCLI(new VelcroCommandsImpl())
+        return new VelcroCLI(new VelcroCommandDispatch())
     }
 
     constructor(private readonly commands: VelcroCommands) {
@@ -55,6 +56,7 @@ export class VelcroCLI {
                         configFile: args.configFile as string,
                         elasticsearch: createElasticsearchClientConfig(args),
                         environment: args.environment as string,
+                        logger: new ConsoleLogger(),
                     })
                 },
             })
@@ -75,7 +77,7 @@ export interface VelcroCommands {
     strapCommand(options: StrapOptions): Promise<void> | void
 }
 
-class VelcroCommandsImpl implements VelcroCommands {
+class VelcroCommandDispatch implements VelcroCommands {
     defaultCommand(): void {
         console.log('run `velcro strap` or `velcro strap --help` to get started')
     }

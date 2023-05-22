@@ -1,5 +1,6 @@
 import {VelcroCLI, VelcroCommands} from './velcro.cli'
 import type {StrapOptions} from './velcro.strap'
+import {ConsoleLogger} from './logger'
 
 describe('VelcroCLI', () => {
 
@@ -28,7 +29,10 @@ describe('VelcroCLI', () => {
             expect(commands.defaultCommand).not.toHaveBeenCalled()
             expect(commands.strapCommand).toHaveBeenCalled()
             const options: StrapOptions = ((commands.strapCommand as any).mock.calls[0] as any)[0]
-            expect(options).toStrictEqual(expected)
+            expect(options.environment).toStrictEqual(expected.environment)
+            expect(options.elasticsearch).toStrictEqual(expected.elasticsearch)
+            expect(options.configFile).toStrictEqual(expected.configFile)
+            expect(options.logger instanceof ConsoleLogger).toStrictEqual(true)
         }
 
         it('parses --environment', async () => {
@@ -39,7 +43,8 @@ describe('VelcroCLI', () => {
                     auth: undefined,
                     tls: {insecure: false},
                 },
-                environment: 'test'
+                environment: 'test',
+                logger: new ConsoleLogger(),
             })
         })
 
@@ -51,7 +56,8 @@ describe('VelcroCLI', () => {
                     auth: undefined,
                     tls: {insecure: false},
                 },
-                environment: undefined
+                environment: undefined,
+                logger: new ConsoleLogger(),
             })
         })
 
@@ -63,7 +69,8 @@ describe('VelcroCLI', () => {
                     auth: undefined,
                     tls: {insecure: true},
                 },
-                environment: undefined
+                environment: undefined,
+                logger: new ConsoleLogger(),
             })
         })
 
@@ -75,7 +82,8 @@ describe('VelcroCLI', () => {
                     auth: 'apiKey',
                     tls: {insecure: false},
                 },
-                environment: undefined
+                environment: undefined,
+                logger: new ConsoleLogger(),
             })
         })
 
@@ -87,7 +95,8 @@ describe('VelcroCLI', () => {
                     auth: 'basic',
                     tls: {insecure: false},
                 },
-                environment: undefined
+                environment: undefined,
+                logger: new ConsoleLogger(),
             })
         })
 
@@ -99,7 +108,8 @@ describe('VelcroCLI', () => {
                     auth: 'token',
                     tls: {insecure: false},
                 },
-                environment: undefined
+                environment: undefined,
+                logger: new ConsoleLogger(),
             })
         })
     })

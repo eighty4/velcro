@@ -1,6 +1,7 @@
 import {Client} from '@elastic/elasticsearch'
 import type {ClientOptions} from '@elastic/elasticsearch/lib/client'
 import type {ConnectionOptions} from 'tls'
+import type {Logger} from './logger'
 
 export type ElasticsearchAuthMethod = 'apiKey' | 'basic' | 'token'
 
@@ -14,8 +15,12 @@ export interface ElasticsearchClientConfig {
     },
 }
 
-export function createElasticsearchClient(config?: ElasticsearchClientConfig): Client {
-    return new Client(createElasticsearchClientOptions(config))
+export function createElasticsearchClient(config?: ElasticsearchClientConfig, logger?: Logger): Client {
+    const clientOptions = createElasticsearchClientOptions(config)
+    if (logger) {
+        logger.log('elasticsearch client configured for', config?.address)
+    }
+    return new Client(clientOptions)
 }
 
 export function createElasticsearchClientOptions(providedConfig?: ElasticsearchClientConfig): ClientOptions {
