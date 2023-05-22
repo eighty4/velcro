@@ -16,10 +16,15 @@ module.exports = {
     'plugins': [
         '@typescript-eslint',
     ],
+    'ignorePatterns': [
+        'lib/**/*.d.ts',
+        'lib/**/*.js',
+    ],
     'rules': {
         'indent': [
             'error',
             4,
+            {SwitchCase: 1},
         ],
         'linebreak-style': [
             'error',
@@ -35,5 +40,6 @@ module.exports = {
             'never',
         ],
         '@typescript-eslint/no-explicit-any': 0,
+        'comma-dangle': ['error', 'always-multiline'],
     },
 }

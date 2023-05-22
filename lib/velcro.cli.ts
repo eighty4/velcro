@@ -9,10 +9,6 @@ import type {ElasticsearchAuthMethod, ElasticsearchClientConfig} from './es.clie
 
 export class VelcroCLI {
 
-    static initialize(): VelcroCLI {
-        return new VelcroCLI(new VelcroCommandDispatch())
-    }
-
     constructor(private readonly commands: VelcroCommands) {
     }
 
@@ -64,6 +60,10 @@ export class VelcroCLI {
                 this.commands.defaultCommand()
             })
             .strict()
+    }
+
+    static initialize(): VelcroCLI {
+        return new VelcroCLI(new VelcroCommandDispatch())
     }
 
     async execute(): Promise<void> {

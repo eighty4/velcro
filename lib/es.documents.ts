@@ -17,6 +17,7 @@ interface IndexDocumentsResult {
     documentIds: DocumentIds
 }
 
+// todo maintain concurrent indexing and incorporate logging of indexed and error producing documents
 export async function indexDocuments(client: Client, documents: Documents): Promise<IndexDocumentsResult> {
     const indexing: Record<IndexName, Array<Promise<DocumentId>>> = {}
     for (const indexName in documents) {

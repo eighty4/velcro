@@ -23,7 +23,7 @@
     "build": "tsc",
     "pretest": "pnpm clean",
     "test": "jest",
-    "lint": "eslint lib/**/*.ts"
+    "lint": "eslint lib"
   },
   "dependencies": {
     "@elastic/elasticsearch": "^8.7.0",

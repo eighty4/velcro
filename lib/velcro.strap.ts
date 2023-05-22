@@ -66,8 +66,8 @@ export async function strap(config: Config, options: StrapOptions): Promise<Stra
     if (config.documents['all']) {
         await indexDocumentsAndMergeResult(config.documents['all'])
     }
-    if (hasEnvDocs) {
-        await indexDocumentsAndMergeResult(config.documents[options.environment!])
+    if (hasEnvDocs && options.environment) {
+        await indexDocumentsAndMergeResult(config.documents[options.environment])
     }
 
     if (options.logger) {

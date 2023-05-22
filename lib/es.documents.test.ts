@@ -13,8 +13,8 @@ describe('es.documents.ts', () => {
             await initIndex(es, {
                 name: index,
                 properties: {
-                    tweet: 'text'
-                }
+                    tweet: 'text',
+                },
             })
             const doc = {tweet: 'foobar'}
             const id = await indexDocument(es, index, {doc})
@@ -34,14 +34,14 @@ describe('es.documents.ts', () => {
             await initIndex(es, {
                 name: index1,
                 properties: {
-                    tweet: 'text'
-                }
+                    tweet: 'text',
+                },
             })
             await initIndex(es, {
                 name: index2,
                 properties: {
-                    tweet: 'text'
-                }
+                    tweet: 'text',
+                },
             })
             const ids = await indexDocuments(es, {
                 [index1]: [{doc: {tweet: 'foo'}}],
