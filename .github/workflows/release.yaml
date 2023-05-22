@@ -31,10 +31,6 @@ jobs:
           node-version: 18
           registry-url: https://registry.npmjs.org
       - run: corepack enable && corepack prepare pnpm@latest --activate
-      - name: Configure git
-        run: |
-          git config --global user.name "Adam McKee"
-          git config --global user.email "adam.be.g84d@gmail.com"
       - name: Install deps
         run: pnpm i
       - name: Build
@@ -44,7 +40,7 @@ jobs:
         env:
           SEMVER_BUMP: ${{github.event.inputs.semver-bump}}
         run: |
-          VERSION=$(npm version $SEMVER_BUMP | tr -d '[:space:]')
+          VERSION=$(npm version $SEMVER_BUMP --no-git-tag-version | tr -d '[:space:]')
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
       - name: Publish release
         env:
@@ -52,7 +48,10 @@ jobs:
         run: npm publish --public
       - name: Bump ver > git
         run: |
+          git config --global user.name "Adam McKee"
+          git config --global user.email "adam.be.g84d@gmail.com"
           git commit -am "increment @eighty4/velcro@latest to ${{steps.semver.outputs.version}}"
+          git tag ${{steps.semver.outputs.version}}
           git push --atomic origin main ${{steps.semver.outputs.version}}
     outputs:
       version: ${{steps.semver.outputs.version}}

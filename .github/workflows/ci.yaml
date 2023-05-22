@@ -27,10 +27,6 @@ jobs:
           node-version: 18
           registry-url: https://registry.npmjs.org
       - run: corepack enable && corepack prepare pnpm@latest --activate
-      - name: Configure git
-        run: |
-          git config --global user.name "Adam McKee"
-          git config --global user.email "adam.be.g84d@gmail.com"
       - name: Install deps
         run: pnpm i
       - name: Build
@@ -46,6 +42,8 @@ jobs:
         run: npm publish --public --tag next
       - name: Bump ver > git
         run: |
+          git config --global user.name "Adam McKee"
+          git config --global user.email "adam.be.g84d@gmail.com"
           git commit -am "increment @eighty4/velcro@next to ${{steps.semver.outputs.version}}"
           git push
     outputs:
