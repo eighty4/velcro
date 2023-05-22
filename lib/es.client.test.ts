@@ -17,7 +17,7 @@ describe('createElasticsearchClientOptions', () => {
         const logger: Logger = {log: jest.fn()}
         const client = createElasticsearchClient({}, logger)
         expect(client).toBeDefined()
-        expect(logger.log).toHaveBeenCalledWith('elasticsearch client configured for', 'http://localhost:9200')
+        expect(logger.log).toHaveBeenCalledWith('elasticsearch client will connect to', 'http://localhost:9200')
     })
 
     it('prepends http when address protocol missing', () => {

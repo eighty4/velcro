@@ -4,7 +4,7 @@ import {initIndex} from './es.indices'
 import type {Logger} from './logger'
 import {isEmptyString} from './validateFns'
 import type {Config} from './velcro.config'
-import type {DocumentId, Environment, Index, IndexName} from './velcro.model'
+import type {DocumentIds, Documents, Environment, Index} from './velcro.model'
 
 export interface StrapOptions {
     configFile: string
@@ -16,7 +16,7 @@ export interface StrapOptions {
 export interface StrapResult {
     created: {
         indices: Array<Index>,
-        documents: Record<IndexName, DocumentId>,
+        documents: DocumentIds,
     }
 }
 
@@ -38,24 +38,43 @@ export async function strap(config: Config, options: StrapOptions): Promise<Stra
         result.created.indices.push(index)
     }
 
+    const hasEnvDocs = !!options.environment && config.documents[options.environment]
+    if (!hasEnvDocs && !config.documents['all']) {
+        return result
+    }
+
     if (options.logger) {
-        if (options.environment) {
-            options.logger.log('indexing docs for env', options.environment)
+        if (hasEnvDocs) {
+            options.logger.log('indexing docs for environment', options.environment)
         } else if (config.documents['all']) {
-            options.logger.log('indexing docs (no env specified)')
+            options.logger.log('indexing docs (no declared environment)')
         }
     }
-    if (config.documents['all']) {
-        await indexDocuments(es, config.documents['all'])
+
+    async function indexDocumentsAndMergeResult(docs: Documents) {
+        const indexResult = await indexDocuments(es, docs)
+        Object.keys(indexResult.documentIds).forEach(indexName => {
+            if (!result.created.documents[indexName]) {
+                result.created.documents[indexName] = []
+            }
+            indexResult.documentIds[indexName].forEach(documentId => {
+                result.created.documents[indexName].push(documentId)
+            })
+        })
     }
-    if (options.environment) {
-        await indexDocuments(es, config.documents[options.environment])
+
+    if (config.documents['all']) {
+        await indexDocumentsAndMergeResult(config.documents['all'])
+    }
+    if (hasEnvDocs) {
+        await indexDocumentsAndMergeResult(config.documents[options.environment!])
     }
 
     if (options.logger) {
         const {length: indicesCount} = result.created.indices
         const indices = `${indicesCount} ${indicesCount === 1 ? 'index' : 'indices'}`
-        const {length: docsCount} = Object.keys(result.created.documents)
+        const docsCount = Object.keys(result.created.documents)
+            .reduce((a, v) => a + result.created.documents[v].length, 0)
         const documents = `${docsCount} document${docsCount === 1 ? '' : 's'}`
         options.logger.log('created', indices, 'and', documents)
     }
