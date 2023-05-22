@@ -13,6 +13,8 @@ on:
           - minor
           - patch
 
+concurrency: publish
+
 jobs:
 
   verified:
@@ -22,7 +24,6 @@ jobs:
     name: Publish @latest to npm
     needs: verified
     runs-on: ubuntu-latest
-    concurrency: publish
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
