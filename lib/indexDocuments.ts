@@ -4,7 +4,9 @@ import type {Document, DocumentId, DocumentIds, Documents, IndexName} from './ve
 
 export async function indexDocument(client: Client, index: string, document: Document): Promise<DocumentId> {
     try {
-        return (await client.index({index, id: document._id, document: document.doc}))._id
+        const request = {index, id: document._id, document: document.doc}
+        const response = await client.index(request)
+        return response._id
     } catch (e: any) {
         throw new Error(`error indexing document in index ${index} (${e.message})`)
     }
