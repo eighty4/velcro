@@ -12,7 +12,7 @@
     "mapping",
     "document"
   ],
-  "version": "0.0.7-35",
+  "version": "0.0.7-36",
   "license": "MIT",
   "main": "lib/velcro.exports.js",
   "types": "lib/velcro.exports.d.ts",
