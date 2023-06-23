@@ -19,10 +19,8 @@
   "bin": "bin/velcro",
   "scripts": {
     "clean": "rimraf -g lib/**/*.{d.ts,js}",
-    "prebuild": "pnpm clean",
-    "build": "tsc",
-    "pretest": "pnpm clean",
-    "test": "jest",
+    "build": "pnpm clean && tsc",
+    "test": "pnpm clean && jest",
     "lint": "eslint lib"
   },
   "dependencies": {
