@@ -25,6 +25,10 @@ jobs:
     needs: cut-release-commit
     uses: ./.github/workflows/verify.yml
 
+  docs:
+    needs: verified
+    uses: ./.github/workflows/www.yml
+
   prerelease:
     name: Publish @next to npm
     needs: verified
