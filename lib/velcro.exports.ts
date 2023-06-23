@@ -6,7 +6,10 @@ export {
     type ManagedIndices,
 } from './testing/VelcroTestStrap'
 
-export type {VelcroTestStrapOptions} from './testing/createVelcroTestStrap'
+export type {
+    ManagedTestIndexNameFn,
+    VelcroTestStrapOptions,
+} from './testing/createVelcroTestStrap'
 
 export type {
     DocumentId,
@@ -16,6 +19,7 @@ export type {
     DocumentIds,
     DocumentsConfig,
     Environment,
+    Index,
     IndexName,
     MappingName,
     MappingType,
