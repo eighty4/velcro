@@ -40,7 +40,7 @@ jobs:
         env:
           SEMVER_BUMP: ${{github.event.inputs.semver-bump}}
         run: |
-          VERSION=$(npm version $SEMVER_BUMP --no-git-tag-version | tr -d '[:space:]')
+          VERSION=$(npm version $SEMVER_BUMP --no-git-tag-version --json | jq -r '.["@eighty4/velcro"]')
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
       - name: Publish release
         env:

@@ -47,7 +47,7 @@ jobs:
       - name: Increment version
         id: semver
         run: |
-          VERSION=$(npm version prerelease --no-git-tag-version | tr -d '[:space:]')
+          VERSION=$(npm version prerelease --no-git-tag-version --json | jq -r '.["@eighty4/velcro"]')
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
       - name: Publish prerelease
         env:
